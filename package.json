@@ -1,0 +1,8 @@
+{
+  "name": "trop-tiede",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/thibleroy/trop-tiede.git",
+  "author": "thibleroy <thibleroy23@gmail.com>",
+  "license": "MIT"
+}
