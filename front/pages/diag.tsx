@@ -35,7 +35,19 @@ class Diag extends Component<IProps,IApexState> {
             series: [{
                 name: 'series-1',
                 data: [30, 40, 45, 50, 49, 60, 70, 91]
-            }]
+            },
+                {
+                    name: 'series-2',
+                    data: [12, 43]
+                },
+                {
+                    name: 'series-3',
+                    data: [65, 41]
+                }, {
+                    name: 'series-4',
+                    data: [29, 12]
+                }]
+
         }
     }
 

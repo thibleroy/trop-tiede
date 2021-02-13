@@ -22,7 +22,7 @@ export default function Home() {
         </p>
 
         <div className="mixed-chart">
-<Diag/>
+    <Diag/>
         </div>
       </main>
 
