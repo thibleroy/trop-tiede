@@ -6,11 +6,12 @@
 
 #### DB
 
+- mongoDB client
+
 #### Devices messaging
 
+- mqtt client
+
 #### HTTP server
-- mqtt client for IoT devices (over tcp and wifi local network)
-- http server
-- mongoDB client
 
 ### FrontEnd (NextJS)
