@@ -1,59 +1,57 @@
 import React, {Component} from "react";
-import dynamic from 'next/dynamic'
-const ReactApexChart = dynamic(() => import('react-apexcharts'), {ssr: false});
-
-interface IProps {
+import loadable from '@loadable/component';
+const ReactApexChart = loadable(() => import('react-apexcharts'), {ssr: false});
+import {ApexOptions} from 'apexcharts';
+const s1 = [
+    {
+        name: 'series-1',
+        data: [30, 40, 45, 50, 49, 60, 70, 91]
+    }];
+interface c {
+    a: ApexOptions,
+    toggle: string
 }
-
-interface IApexState {
-    options: {
-        chart: {
-            id: string
-        },
-        xaxis: {
-            categories: number[]
-        }
-    },
-    series: {
-        name: string,
-        data: number[]
-    }[]
-}
-
-class Diag extends Component<IProps,IApexState> {
-    constructor(props: IProps) {
+class Diag extends Component<{}, c> {
+    constructor(props: any) {
         super(props);
         this.state = {
-            options: {
-                chart: {
-                    id: 'apexchart-example'
-                },
+            a: {
                 xaxis: {
                     categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998]
-                }
-            },
-            series: [{
-                name: 'series-1',
-                data: [30, 40, 45, 50, 49, 60, 70, 91]
-            },
-                {
-                    name: 'series-2',
-                    data: [12, 43]
                 },
-                {
-                    name: 'series-3',
-                    data: [65, 41]
-                }, {
-                    name: 'series-4',
-                    data: [29, 12]
-                }]
-
+                series: [],
+            },
+            toggle: 'Start'
         }
+        this.toggle = this.toggle.bind(this);
+    }
+
+    toggle() {
+            if (this.state.toggle === 'Start') {
+                this.setState({
+                    toggle: "Stop",
+                    a: {
+                        series: s1
+                    }
+                });
+            }
+            else {
+                this.setState({
+                    toggle: "Start",
+                    a: {
+                        series: []
+                    }
+                });
+            }
     }
 
     render() {
         return (
-            <ReactApexChart options={this.state.options} series={this.state.series} type="bar" width={500} height={320}/>
+            <div>
+                <button onClick={this.toggle}>{this.state.toggle}</button>
+                <ReactApexChart options={this.state.a} series={this.state.a.series} type="line" width={500}
+                                height={320}/>
+            </div>
         )
     }
 }
