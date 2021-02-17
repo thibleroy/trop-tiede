@@ -56,7 +56,7 @@ func GetHash(pwd []byte) string {
 	return string(hash)
 }
 
-func NewResource() IResource{
+func NewResource() IResource {
 	creationTime := time.Now()
 	return IResource{
 		ID:        primitive.NewObjectIDFromTimestamp(creationTime),

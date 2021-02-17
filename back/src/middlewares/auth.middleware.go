@@ -1,10 +1,10 @@
 package middlewares
 
 import (
+	"back/lib"
 	"context"
 	"encoding/json"
 	"go.mongodb.org/mongo-driver/bson"
-	"back/src/lib"
 	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"

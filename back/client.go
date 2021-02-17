@@ -1,10 +1,10 @@
 package main
 
 import (
+	"back/lib"
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"back/src/lib"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -28,9 +28,8 @@ func getRequest(url string) []byte{
 }
 
 func postRequest(url string) string{
-	track := lib.ITrack{
-		Title:     "myCreatedTitle",
-		Artist:    "myArtist",
+	track := lib.IRoom{
+
 	}
 	str, _ := json.Marshal(track)
 	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(str))
@@ -49,7 +48,7 @@ func postRequest(url string) string{
 	return resp.Header["Location"][0]
 }
 
-func putRequest(url string, track lib.ITrack){
+func putRequest(url string, track lib.IRoom){
 	fmt.Println("url:", url)
 	str, _ := json.Marshal(track)
 	req, _ := http.NewRequest(http.MethodPut, url, bytes.NewBuffer(str))
@@ -70,7 +69,7 @@ func putRequest(url string, track lib.ITrack){
 
 func deleteRequest(url string) {
 	fmt.Println("url:", url)
-	str, _ := json.Marshal(lib.ITrack{})
+	str, _ := json.Marshal(lib.IRoom{})
 	req, _ := http.NewRequest(http.MethodDelete, url, bytes.NewBuffer(str))
 	req.Header.Set("Content-Type", "application/json")
 	client := &http.Client{}
@@ -88,27 +87,14 @@ func deleteRequest(url string) {
 }
 
 func main(){
-	url := "http://localhost:8080"
-	uri := postRequest(url + "/tracks")
+	url := "http://localhost:8080/rooms/123"
 	fmt.Println("post ok")
-	var track lib.ITrack
-	val := getRequest(uri)
-	err := json.Unmarshal(val, &track)
+	var room lib.IRoom
+	val := getRequest(url)
+	err := json.Unmarshal(val, &room)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("created track", track)
-	track.Artist = "modified"
-	fmt.Println("put request : " + uri, track)
-	putRequest(uri, track)
-	var upTrack lib.ITrack
-	updatedTrack := getRequest(uri)
-	err2 := json.Unmarshal(updatedTrack, &upTrack)
-	if err2 != nil {
-		log.Fatal(err2)
-	}
-	fmt.Println("updated", upTrack)
-	deleteRequest(uri)
-	fmt.Println("deleted")
-	getRequest(uri)
+	fmt.Println("created track", room)
+
 }

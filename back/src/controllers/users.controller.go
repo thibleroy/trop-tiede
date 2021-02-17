@@ -1,12 +1,12 @@
 package controllers
 
 import (
+	"back/lib"
+	"back/src/services"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"back/src/lib"
-	"back/src/services"
 	"io/ioutil"
 	"log"
 	"net/http"

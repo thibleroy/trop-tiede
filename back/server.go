@@ -1,8 +1,8 @@
 package main
 
 import (
-    app "back/src"
-    "back/src/lib"
+	"back/lib"
+	app "back/src"
 )
 
 func main(){

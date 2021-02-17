@@ -16,10 +16,10 @@ type IRoomData struct {
 }
 
 type IRoom struct {
-	Resource IResource
-	Name string
+	Resource    IResource
+	Name        string
 	Description string
-	Data IRoomData
+	Data        IRoomData
 }
 type IEnvironment struct {
 	WebServerPort int
@@ -38,11 +38,11 @@ type IPostReturn struct {
 }
 
 type IUser struct {
-	Resource IResource
+	Resource  IResource
 	FirstName string
-	LastName string
-	Email string
-	Password string
+	LastName  string
+	Email     string
+	Password  string
 }
 
 type IError struct {
