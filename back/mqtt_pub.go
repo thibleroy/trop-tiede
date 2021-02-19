@@ -15,6 +15,7 @@ func main(){
 	for {
 		payload,_ := json.Marshal(lib.IRoomData{
 			Temperature: rand.Intn(5) + 20,
+			Time: time.Now(),
 		})
 		ttmqtt.Pub(lib.MqttClient, lib.Environment.MqttTemperatureTopic, string(payload))
 		time.Sleep(10 * time.Second)

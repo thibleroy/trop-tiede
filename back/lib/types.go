@@ -13,6 +13,7 @@ type IResource struct {
 
 type IRoomData struct {
 	Temperature int
+	Time time.Time
 }
 
 type IRoom struct {
