@@ -17,7 +17,22 @@ var connectLostHandler mqtt.ConnectionLostHandler = func(client mqtt.Client, err
 	fmt.Printf("Connect lost: %v", err)
 }
 
+func wait(token mqtt.Token){
+	token.Wait()
+	if token.Error() != nil {
+		panic(token.Error())
+	}
+}
 
+func Sub(client mqtt.Client, topic string, cb mqtt.MessageHandler) {
+	wait(client.Subscribe(topic, 0, cb))
+	fmt.Println("Topic subscribed", topic)
+}
+
+func Pub(client mqtt.Client, topic string, payload string) {
+	wait(client.Publish(topic, 0, false, payload))
+	fmt.Println("Message published", )
+}
 func InitMqttClient(brokerAddr string, brokerPort int, clientId string, username string, password string) mqtt.Client {
 	opts := mqtt.NewClientOptions()
 	opts.AddBroker(fmt.Sprintf("tcp://%s:%d", brokerAddr, brokerPort))
@@ -27,9 +42,11 @@ func InitMqttClient(brokerAddr string, brokerPort int, clientId string, username
 	opts.SetDefaultPublishHandler(messagePubHandler)
 	opts.OnConnect = connectHandler
 	opts.OnConnectionLost = connectLostHandler
-	client := mqtt.NewClient(opts)
+	return mqtt.NewClient(opts)
+}
+
+func ConnectMqttClient(client mqtt.Client){
 	if token := client.Connect(); token.Wait() && token.Error() != nil {
 		panic(token.Error())
 	}
-	return client
 }

@@ -27,6 +27,7 @@ func InitBackEnd(env lib.IEnvironment) {
 
 	// initializes and connects the mqtt client
 	lib.MqttClient = mqtt.InitMqttClient(env.MqttBrokerURL, env.MqttBrokerPort, env.MqttClientId, env.MqttUsername, env.MqttPassword)
+	mqtt.ConnectMqttClient(lib.MqttClient)
 
 	// initializes the http server with previously created Mux router
 	http.InitWebServer(env.WebServerPort, lib.Router)

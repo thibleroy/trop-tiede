@@ -31,6 +31,7 @@ type IEnvironment struct {
 	MqttClientId string
 	MqttUsername string
 	MqttPassword string
+	MqttTemperatureTopic string
 }
 
 type IPostReturn struct {

@@ -29,6 +29,7 @@ func GetServerEnv() IEnvironment {
 	mqttClientIdStr := dotEnvVariable("MQTT_CLIENTID")
 	mqttUsernameStr := dotEnvVariable("MQTT_USERNAME")
 	mqttPasswordStr := dotEnvVariable("MQTT_PASSWORD")
+	mqttTemperatureTopic := dotEnvVariable("MQTT_TEMP_TOPIC")
 
 	var serverEnvironment IEnvironment
 	wsPort, _ := strconv.Atoi(wspStr)
@@ -44,6 +45,7 @@ func GetServerEnv() IEnvironment {
 		MqttClientId: mqttClientIdStr,
 		MqttUsername: mqttUsernameStr,
 		MqttPassword: mqttPasswordStr,
+		MqttTemperatureTopic: mqttTemperatureTopic,
 	}
 	return serverEnvironment
 }
