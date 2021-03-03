@@ -12,7 +12,7 @@ type IResource struct {
 }
 
 type IRoomData struct {
-	Temperature int
+	Temperature float64
 	Time time.Time
 }
 
@@ -21,6 +21,10 @@ type IRoom struct {
 	Name        string
 	Description string
 	Data        IRoomData
+}
+
+type IRoomsResponse struct {
+	Rooms []IRoom
 }
 type IEnvironment struct {
 	WebServerPort int

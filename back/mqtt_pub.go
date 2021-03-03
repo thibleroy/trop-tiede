@@ -4,7 +4,6 @@ import (
 	"back/lib"
 	ttmqtt "back/lib/mqtt"
 	"encoding/json"
-	"math/rand"
 	"time"
 )
 
@@ -14,7 +13,7 @@ func main(){
 	ttmqtt.ConnectMqttClient(lib.MqttClient)
 	for {
 		payload,_ := json.Marshal(lib.IRoomData{
-			Temperature: rand.Intn(5) + 20,
+			Temperature: 20.5,
 			Time: time.Now(),
 		})
 		ttmqtt.Pub(lib.MqttClient, lib.Environment.MqttTemperatureTopic, string(payload))

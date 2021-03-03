@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import loadable from '@loadable/component';
+import {IRoomsResponse} from '../lib/types'
 const ReactApexChart = loadable(() => import('react-apexcharts'), {ssr: false});
 import {ApexOptions} from 'apexcharts';
 const s1 = [
@@ -26,12 +27,25 @@ class Diag extends Component<{}, c> {
         this.toggle = this.toggle.bind(this);
     }
 
-    toggle() {
+    async toggle() {
+        const res = await fetch('http://localhost:8081/rooms');
+        const rooms: IRoomsResponse = await res.json();
+        const _s: number[] = []
+        const _dates: Date[] =[]
+        rooms.Rooms.filter((room) => {
+            _s.push(room.Data.Temperature);
+            _dates.push(room.Data.Time)
+        })
+        console.log('rooms', rooms);
             if (this.state.toggle === 'Start') {
                 this.setState({
                     toggle: "Stop",
                     a: {
-                        series: s1
+                        xaxis: {
+                            categories: _dates
+                        },
+                        series: [{data: _s}]
+
                     }
                 });
             }
@@ -39,6 +53,9 @@ class Diag extends Component<{}, c> {
                 this.setState({
                     toggle: "Start",
                     a: {
+                        xaxis: {
+                            categories: []
+                        },
                         series: []
                     }
                 });

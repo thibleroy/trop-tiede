@@ -4,7 +4,6 @@ import (
 	"back/lib"
 	"back/lib/db"
 	"back/lib/http"
-	"back/lib/mqtt"
 	"back/src/middlewares"
 	"back/src/routes"
 	"github.com/gorilla/mux"
@@ -24,10 +23,6 @@ func InitBackEnd(env lib.IEnvironment) {
 
 	// retrieves Mongo.Database instance
 	lib.MyMusicAPIDB, lib.DBContext = db.InitDB(env.MongoURL, env.MongoPort, dbName)
-
-	// initializes and connects the mqtt client
-	lib.MqttClient = mqtt.InitMqttClient(env.MqttBrokerURL, env.MqttBrokerPort, env.MqttClientId, env.MqttUsername, env.MqttPassword)
-	mqtt.ConnectMqttClient(lib.MqttClient)
 
 	// initializes the http server with previously created Mux router
 	http.InitWebServer(env.WebServerPort, lib.Router)

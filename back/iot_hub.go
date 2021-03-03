@@ -2,14 +2,17 @@ package main
 
 import (
 	"back/lib"
+	"back/lib/db"
 	ttmqtt "back/lib/mqtt"
-	"encoding/json"
+	"back/src/services"
 	"fmt"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
+	"strconv"
 	"strings"
+	"time"
 )
 
-var tempStore []lib.IRoomData
+var tempStore []int
 
 var temperatureReceivedHandler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
 	fmt.Println(strings.Split(msg.Topic(),"/"))
@@ -18,19 +21,29 @@ var temperatureReceivedHandler mqtt.MessageHandler = func(client mqtt.Client, ms
 	fmt.Println("room", room)
 	fmt.Println("datatype", dataType)
 	fmt.Printf("Received 1 message: %s from topic: %s\n", msg.Payload(), msg.Topic())
-	var currentTemp lib.IRoomData
-	err := json.Unmarshal(msg.Payload(), &currentTemp)
+	num, _ := strconv.ParseFloat(string(msg.Payload()),64)
+	currentTemp := lib.IRoomData{
+		Temperature: num,
+		Time:        time.Now(),
+	}
+	currentRoom := lib.IRoom{
+		Name:        room,
+		Description: "Room description of " + room,
+		Data:        currentTemp,
+	}
+	_, err := services.AddRoomData(currentRoom)
 	if err != nil {
 		panic(err)
 	}
-	tempStore = append(tempStore, currentTemp)
-	fmt.Println("New store", tempStore)
 }
 
 func main(){
 	lib.Environment = lib.GetServerEnv()
 	lib.MqttClient = ttmqtt.InitMqttClient(lib.Environment.MqttBrokerURL, lib.Environment.MqttBrokerPort, lib.Environment.MqttClientId, lib.Environment.MqttUsername, lib.Environment.MqttPassword)
 	ttmqtt.ConnectMqttClient(lib.MqttClient)
-	ttmqtt.Sub(lib.MqttClient, lib.Environment.MqttTemperatureTopic, temperatureReceivedHandler)
+	ttmqtt.Sub(lib.MqttClient, "#", temperatureReceivedHandler)
+	dbName := "trop-tiede"
+	// retrieves Mongo.Database instance
+	lib.MyMusicAPIDB, lib.DBContext = db.InitDB(lib.Environment.MongoURL, lib.Environment.MongoPort, dbName)
 	select {}
 }
