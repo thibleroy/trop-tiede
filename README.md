@@ -15,3 +15,5 @@
 #### HTTP server
 
 ### FrontEnd (NextJS)
+
+- state management : redux
