@@ -3,7 +3,6 @@ package controllers
 import (
 	"back/lib"
 	"back/src/services"
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
@@ -29,7 +28,6 @@ func GetRoomController (w http.ResponseWriter, req *http.Request) {
 }
 
 func GetRoomsController (w http.ResponseWriter, req *http.Request) {
-	fmt.Println("id received for get all")
 	rooms, err := services.RetrieveAllRooms()
 	if err != nil {
 		w.WriteHeader(404)
@@ -37,12 +35,9 @@ func GetRoomsController (w http.ResponseWriter, req *http.Request) {
 	}
 	a := lib.IRoomsResponse{Rooms: *rooms}
 	value, merr := json.Marshal(a)
-	value = bytes.Replace(value, []byte(":NaN"), []byte(":null"), -1)
-	fmt.Println("value", value)
 	if merr != nil {
 		panic(merr)
 	}
-	fmt.Println("rooms", a)
 	w.Write(value)
 }
 

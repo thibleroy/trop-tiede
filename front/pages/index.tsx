@@ -1,26 +1,31 @@
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 import React from "react";
-import Diag from "./diag"
+import 'fontsource-roboto';
+import {useRouter} from "next/router";
 
-const a = "Ifécho";
-export default function Home() {
-    return (
+const Index = () => {
+    const router = useRouter()
+
+    const goHome = async (e: any) => {
+        e.preventDefault()
+        await router.push("/home");
+    }
+
+    return(
         <div className={styles.container}>
             <Head>
-                <title>{a}</title>
-                <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico"/>
+                <title>Trop tiede</title>
+                <link rel="icon" href="/favicon.ico"/>
             </Head>
-
             <main className={styles.main}>
                 <h1 className={styles.title}>
-                    <a> trop tiède </a>
+                    <button onClick={goHome}>Go Home</button>
                 </h1>
-
-                <div className="mixed-chart">
-                    <Diag/>
-                </div>
+                <a> trop tiède </a>
             </main>
         </div>
     )
 }
+
+export default Index
