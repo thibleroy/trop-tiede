@@ -21,5 +21,6 @@
 ### Devices
 
 - esp32
-    - DHT11
     - connexion to private broker over WiFi local network
+
+- DHT11
