@@ -1,6 +1,6 @@
 # trop-tiede
 
-## Ma station de température
+## My IoT Hub
 
 ### Backend (golang)
 
@@ -17,3 +17,9 @@
 ### FrontEnd (NextJS)
 
 - state management : redux
+
+### Devices
+
+- esp32
+    - DHT11
+    - connexion to private broker over WiFi local network
