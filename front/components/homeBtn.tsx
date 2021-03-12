@@ -1,20 +1,48 @@
-import React from "react";
+import React from 'react';
+import Button from '@material-ui/core/Button';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import {useRouter} from "next/router";
-import {Dispatch} from "redux";
 import {useDispatch} from "react-redux";
-import {hideMenu} from "../redux/actions/menuActions"
+import {toggleMenu} from "../redux/actions/menuActions";
 
 const HomeBtn = () => {
+    const dispatch = useDispatch();
     const router = useRouter();
-    const dispatch: Dispatch = useDispatch();
-    const goHome = async (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault()
-        await router.push("/home");
-        dispatch(hideMenu());
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const navigate = async (e: React.MouseEvent<HTMLLIElement>, route: string) => {
+        e.preventDefault();
+        await router.push(route);
+        handleClose();
+        dispatch(toggleMenu());
     }
 
     return (
-        <button onClick={goHome}>Go Home</button>
-    )
+        <div>
+            <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
+                Open Menu
+            </Button>
+            <Menu
+                id="simple-menu"
+                anchorEl={anchorEl}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+            >
+                <MenuItem onClick={e => navigate(e, "/")}>Index</MenuItem>
+                <MenuItem onClick={e => navigate(e, "/home")}>Home</MenuItem>
+            </Menu>
+        </div>
+    );
 }
-export default HomeBtn;
+
+export default HomeBtn

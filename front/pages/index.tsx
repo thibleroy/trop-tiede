@@ -5,10 +5,9 @@ import 'fontsource-roboto';
 import {useRouter} from "next/router";
 
 const Index = () => {
-    const router = useRouter()
-
+    const router = useRouter();
     const goHome = async (e: any) => {
-        e.preventDefault()
+        e.preventDefault();
         await router.push("/home");
     }
 
