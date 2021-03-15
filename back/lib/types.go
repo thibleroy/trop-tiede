@@ -30,11 +30,11 @@ type IRoom struct {
 }
 
 type IRoomDescription struct {
-	IDescription
+	Description IDescription
 }
 
 type IDeviceDescription struct {
-	IDescription
+	Description IDescription
 	SerialNumber string
 }
 

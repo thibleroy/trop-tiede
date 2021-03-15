@@ -17,7 +17,7 @@ func main(){
 			Temperature: 20.5,
 			Device:      lib.IDevice{
 				DeviceDescription: lib.IDeviceDescription{
-					IDescription: lib.IDescription{
+					Description: lib.IDescription{
 						Name:    "ESP32 uPesy",
 						Details: "La carte uPesy ESP32 WROVER DevKit est basée sur un ESP32. " +
 							"Cette carte peut être mise sur une breadboard facilement car les 2 " +

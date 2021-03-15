@@ -4,9 +4,12 @@ import (
 	"back/lib"
 	"back/lib/db"
 	ttmqtt "back/lib/mqtt"
+	"back/src/services"
+	"encoding/json"
 	"fmt"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"strings"
+	"time"
 )
 
 var tempStore []int
@@ -17,7 +20,18 @@ var temperatureReceivedHandler mqtt.MessageHandler = func(client mqtt.Client, ms
 	fmt.Println("room", room)
 	fmt.Println("datatype", dataType)
 	fmt.Printf("Received 1 message: %s from topic: %s\n", msg.Payload(), msg.Topic())
-
+	var roomData lib.IRoomData
+	err := json.Unmarshal(msg.Payload(), &roomData)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("name", roomData.Device)
+	roomData.Time = time.Now()
+	id, err := services.AddRoomData(roomData)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("created id", id)
 }
 
 func main(){
