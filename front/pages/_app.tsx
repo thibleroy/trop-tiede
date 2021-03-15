@@ -20,6 +20,7 @@ import DrawerToggler from "../components/drawerToggler";
 MyApp.getInitialProps = async () => {
     const res = await fetch(process.env.NEXT_PUBLIC_WEBSERVER_URL + '/rooms');
     const rooms: IRoomsResponse = await res.json();
+    console.log("rooms", rooms)
     return rooms
 }
 export default MyApp

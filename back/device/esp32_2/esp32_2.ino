@@ -19,9 +19,9 @@ void setup() {
   Serial.begin(115200);
   setup_wifi();
   setup_mqtt();
-  client.publish("#", "Hello from ESP32");
+  client.publish("/room1", "Hello from ESP32");
+  client.subscribe()
   DHT_sens.begin();
- 
 }
 void loop() {
   reconnect();

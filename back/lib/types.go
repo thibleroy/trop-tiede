@@ -12,20 +12,45 @@ type IResource struct {
 }
 
 type IRoomData struct {
+	Resource IResource
 	Temperature float64
 	Time time.Time
+	Device IDevice
+}
+
+type IDevice struct {
+	Resource IResource
+	DeviceDescription IDeviceDescription
+	RoomID primitive.ObjectID
 }
 
 type IRoom struct {
-	Resource    IResource
-	Name        string
-	Description string
-	Data        IRoomData
+	Resource IResource
+	RoomDescription IRoomDescription
+}
+
+type IRoomDescription struct {
+	IDescription
+}
+
+type IDeviceDescription struct {
+	IDescription
+	SerialNumber string
+}
+
+type IDescription struct {
+	Name string
+	Details string
 }
 
 type IRoomsResponse struct {
 	Rooms []IRoom
 }
+
+type IRoomDataResponse struct {
+	RoomData []IRoomData
+}
+
 type IEnvironment struct {
 	WebServerPort int
 	MongoURL string
@@ -37,10 +62,6 @@ type IEnvironment struct {
 	MqttUsername string
 	MqttPassword string
 	MqttTemperatureTopic string
-}
-
-type IPostReturn struct {
-	ID primitive.ObjectID
 }
 
 type IUser struct {
