@@ -66,8 +66,7 @@ func PostRoomController (w http.ResponseWriter, req *http.Request) {
 	bodyRoom,_ := ioutil.ReadAll(req.Body)
 	err := json.Unmarshal(bodyRoom, &room)
 	if err != nil {
-		fmt.Println("error")
-		log.Fatal(err)
+		panic(err)
 	}
 	room.Resource = lib.NewResource()
 	returnId, serror := services.AddRoom(room)

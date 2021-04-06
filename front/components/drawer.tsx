@@ -11,21 +11,6 @@ import { Button } from '@material-ui/core';
 import {Add} from "@material-ui/icons";
 import DrawerToggler from "./drawerToggler";
 
-function rand() {
-    return Math.round(Math.random() * 20) - 10;
-}
-
-function getModalStyle() {
-    const top = 50 + rand();
-    const left = 50 + rand();
-
-    return {
-        top: `${top}%`,
-        left: `${left}%`,
-        transform: `translate(-${top}%, -${left}%)`,
-    };
-}
-
 const TTDrawer = ({Rooms}: IRoomsResponse) => {
     const router = useRouter();
     const drawerState = useSelector((state: RootState) => state.menu);
@@ -34,12 +19,11 @@ const TTDrawer = ({Rooms}: IRoomsResponse) => {
         e.preventDefault();
         dispatch(hideMenu());
     }
-    const navigate = async (e: React.MouseEvent<HTMLButtonElement>, id: string) => {
+    const navigate = async (e: React.MouseEvent<HTMLButtonElement>, id?: string) => {
         e.preventDefault();
         await router.push("/room/" + id);
         dispatch(toggleMenu());
     };
-    const [modalStyle] = React.useState(getModalStyle);
     const [open, setOpen] = React.useState(false);
 
     const handleOpen = () => {
@@ -50,19 +34,39 @@ const TTDrawer = ({Rooms}: IRoomsResponse) => {
         setOpen(false);
     };
 
+    const addRoom = async (e: React.MouseEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const room : IRoom = {RoomDescription: {
+            Description: {Details: "test details", Name: "test name"},
+                Position: {Latitude: 2, Longitude: 3}}
+        };
+        const res = await fetch(
+            process.env.NEXT_PUBLIC_WEBSERVER_URL + '/rooms',
+            {
+                body: JSON.stringify(room),
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                method: 'POST'
+            }
+        );
+
+        console.log('post create', res.redirected);
+        handleClose();
+    };
+
     const body = (
-        <div style={modalStyle}>
-            <h2 id="simple-modal-title">Text in a modal</h2>
-            <p id="simple-modal-description">
-                Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-            </p>
-        </div>
+            <form onSubmit={addRoom}>
+                <label htmlFor="name">Name</label>
+                <input id="name" type="text" autoComplete="name" required/>
+                <button type="submit">Register</button>
+            </form>
     );
     return (
         <Drawer open={drawerState.value} onEscapeKeyDown={clickAwayHandler} onBackdropClick={clickAwayHandler}>
             <DrawerToggler/>
             <HomeBtn/>
-            <Button color="primary" size="large" onClick={handleOpen}><Add/></Button>
+            <Button color="default" variant="contained" size="large" onClick={handleOpen}><Add/></Button>
             <Modal
                 open={open}
                 onClose={handleClose}
@@ -73,8 +77,8 @@ const TTDrawer = ({Rooms}: IRoomsResponse) => {
             </Modal>
             <List>
                 {Rooms.map((room: IRoom) => (
-                    <ListItem key={room.Data.Time.toString()}>
-                       <button onClick={e => navigate(e, room.Resource.ID)}>{room.Data.Temperature}</button>
+                    <ListItem key={room.Resource?.ID}>
+                       <Button onClick={e => navigate(e, room.Resource?.ID)}>{room.RoomDescription.Description.Name}</Button>
                     </ListItem>
                     )
                 )}

@@ -10,10 +10,23 @@ export interface  IRoomData {
 }
 
 export interface  IRoom {
-    Resource: IResource;
-    Name:        string
-    Description: string
-    Data :       IRoomData
+    Resource?: IResource;
+    RoomDescription: IRoomDescription;
+}
+
+interface IRoomDescription {
+    Position: IPosition
+    Description: IDescription
+}
+
+interface IDescription {
+    Name: string;
+    Details: string;
+}
+
+interface IPosition {
+    Latitude: number;
+    Longitude: number;
 }
 
 export interface  IRoomsResponse {
