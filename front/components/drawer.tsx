@@ -9,6 +9,7 @@ import {useRouter} from "next/router";
 import HomeBtn from "../components/homeBtn";
 import { Button } from '@material-ui/core';
 import {Add} from "@material-ui/icons";
+import DrawerToggler from "./drawerToggler";
 
 function rand() {
     return Math.round(Math.random() * 20) - 10;
@@ -29,10 +30,6 @@ const TTDrawer = ({Rooms}: IRoomsResponse) => {
     const router = useRouter();
     const drawerState = useSelector((state: RootState) => state.menu);
     const dispatch: Dispatch = useDispatch();
-    const toggleDrawer = (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault();
-        dispatch(toggleMenu());
-    }
     const clickAwayHandler = (e: React.MouseEvent<Document>) => {
         e.preventDefault();
         dispatch(hideMenu());
@@ -63,7 +60,7 @@ const TTDrawer = ({Rooms}: IRoomsResponse) => {
     );
     return (
         <Drawer open={drawerState.value} onEscapeKeyDown={clickAwayHandler} onBackdropClick={clickAwayHandler}>
-            <button onClick={toggleDrawer}> Toggle Menu</button>
+            <DrawerToggler/>
             <HomeBtn/>
             <Button color="primary" size="large" onClick={handleOpen}><Add/></Button>
             <Modal

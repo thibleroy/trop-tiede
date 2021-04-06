@@ -5,23 +5,17 @@ import (
 	"time"
 )
 
-type IResource struct {
-	ID primitive.ObjectID
-	CreatedAt time.Time
-	UpdatedAt time.Time
-}
-
 type IRoomData struct {
 	Resource IResource
 	Temperature float64
 	Time time.Time
 	Device IDevice
+	Room IRoom
 }
 
 type IDevice struct {
 	Resource IResource
 	DeviceDescription IDeviceDescription
-	RoomID primitive.ObjectID
 }
 
 type IRoom struct {
@@ -30,6 +24,7 @@ type IRoom struct {
 }
 
 type IRoomDescription struct {
+	Position IPosition
 	Description IDescription
 }
 
@@ -38,17 +33,22 @@ type IDeviceDescription struct {
 	SerialNumber string
 }
 
-type IDescription struct {
-	Name string
-	Details string
-}
-
 type IRoomsResponse struct {
 	Rooms []IRoom
 }
 
 type IRoomDataResponse struct {
 	RoomData []IRoomData
+}
+
+type IPosition struct {
+	Latitude float64
+	Longitude float64
+}
+
+type IDescription struct {
+	Name string
+	Details string
 }
 
 type IEnvironment struct {
@@ -76,4 +76,10 @@ type IError struct {
 	Error   error
 	Message string
 	Code    int
+}
+
+type IResource struct {
+	ID primitive.ObjectID
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }

@@ -3,6 +3,7 @@ import styles from '../styles/Home.module.css'
 import React from "react";
 import 'fontsource-roboto';
 import {useRouter} from "next/router";
+import {Button} from "@material-ui/core";
 
 const Index = () => {
     const router = useRouter();
@@ -18,9 +19,6 @@ const Index = () => {
                 <link rel="icon" href="/favicon.ico"/>
             </Head>
             <main className={styles.main}>
-                <h1 className={styles.title}>
-                    <button onClick={goHome}>Go Home</button>
-                </h1>
                 <a> trop tiède </a>
             </main>
         </div>

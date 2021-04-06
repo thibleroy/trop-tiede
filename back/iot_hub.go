@@ -17,15 +17,12 @@ var tempStore []int
 var temperatureReceivedHandler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
 	room := strings.Split(msg.Topic(),"/")[1]
 	dataType := strings.Split(msg.Topic(),"/")[2]
-	fmt.Println("room", room)
-	fmt.Println("datatype", dataType)
 	fmt.Printf("Received 1 message: %s from topic: %s\n", msg.Payload(), msg.Topic())
 	var roomData lib.IRoomData
 	err := json.Unmarshal(msg.Payload(), &roomData)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("name", roomData.Device)
 	roomData.Time = time.Now()
 	id, err := services.AddRoomData(roomData)
 	if err != nil {
