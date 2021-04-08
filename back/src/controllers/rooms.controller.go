@@ -18,30 +18,19 @@ func GetRoomController (w http.ResponseWriter, req *http.Request) {
 	id := mux.Vars(req)["id"]
 	objId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
-	room, getError := services.RetrieveRoom(objId)
-	if getError != nil {
-		w.WriteHeader(404)
-		return
+	room, err := services.RetrieveRoom(objId)
+	roomResponse := lib.IRoomResponse{
+		Room: room,
 	}
-	value, _ := json.Marshal(room)
-	w.Write(value)
+	lib.WriteToClient(w, lib.BuildResponse(roomResponse, err))
 }
 
 func GetRoomsController (w http.ResponseWriter, req *http.Request) {
 	rooms, err := services.RetrieveAllRooms()
-	if err != nil {
-		w.WriteHeader(404)
-		return
-	}
-	a := lib.IRoomsResponse{Rooms: *rooms}
-	value, merr := json.Marshal(a)
-	if merr != nil {
-		panic(merr)
-	}
-	fmt.Println("value", a.Rooms)
-	w.Write(value)
+	roomsReponse := lib.IRoomsResponse{Rooms: rooms}
+	lib.WriteToClient(w, lib.BuildResponse(roomsReponse, err))
 }
 
 func PostRoomDataController (w http.ResponseWriter, req *http.Request) {
@@ -57,7 +46,7 @@ func PostRoomDataController (w http.ResponseWriter, req *http.Request) {
 	if serror != nil {
 		panic(serror)
 	}
-	w.Header().Add("Location", "http://" +req.Host + req.RequestURI + "/" + returnId.Hex())
+	w.Header().Add("Location", "http://" + req.Host + req.RequestURI + "/" + returnId.Hex())
 	w.WriteHeader(201)
 }
 
@@ -77,14 +66,13 @@ func PostRoomController (w http.ResponseWriter, req *http.Request) {
 	w.WriteHeader(201)
 }
 
-
 func GetRoomDataController (w http.ResponseWriter, req *http.Request) {
 	id := mux.Vars(req)["id"]
 	startDateInt,_ := strconv.ParseInt(req.URL.Query().Get("startDate"), 10, 64)
 	endDateInt,_ := strconv.ParseInt(req.URL.Query().Get("endDate"), 10, 64)
 	startDate := time.Unix(startDateInt, 0)
 	endDate := time.Unix(endDateInt, 0)
-	fmt.Println("id received for put", id)
+	fmt.Println("id received for get data", id)
 	objId, errId := primitive.ObjectIDFromHex(id)
 	if errId != nil {
 		log.Fatal(errId)
@@ -94,7 +82,7 @@ func GetRoomDataController (w http.ResponseWriter, req *http.Request) {
 		w.WriteHeader(404)
 		return
 	}
-	a := lib.IRoomDataResponse{RoomData: *roomData}
+	a := lib.IRoomDataResponse{RoomData: roomData}
 	value, merr := json.Marshal(a)
 	if merr != nil {
 		panic(merr)

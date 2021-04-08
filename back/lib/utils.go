@@ -1,11 +1,13 @@
 package lib
 
 import (
+	"encoding/json"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 	"log"
+	"net/http"
 	"os"
 	"strconv"
 	"time"
@@ -14,7 +16,7 @@ import (
 func dotEnvVariable(key string) string {
 	err := godotenv.Load(".env")
 	if err != nil {
-		log.Fatalf("Error loading .env.local file")
+		log.Fatalf("Error loading .env file")
 	}
 	return os.Getenv(key)
 }
@@ -75,4 +77,29 @@ func GenerateJWT(secret string)(string,error){
 		return "",err
 	}
 	return tokenString, nil
+}
+
+func WriteToClient (w http.ResponseWriter, bodyValue IResponse) {
+	w.WriteHeader(bodyValue.StatusCode)
+	err := json.NewEncoder(w).Encode(bodyValue)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func BuildResponse (returnValue interface{}, err error) (bodyValue IResponse) {
+	if err != nil {
+		errorValue := IError{
+			Message: err.Error(),
+		}
+		return IResponse{
+			StatusCode: 404,
+			Result:     errorValue,
+		}
+	} else {
+		return IResponse{
+			StatusCode: 200,
+			Result:      returnValue,
+		}
+	}
 }

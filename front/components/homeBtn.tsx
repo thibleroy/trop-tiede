@@ -40,6 +40,7 @@ const HomeBtn = () => {
             >
                 <MenuItem onClick={e => navigate(e, "/")}>Index</MenuItem>
                 <MenuItem onClick={e => navigate(e, "/home")}>Home</MenuItem>
+                <MenuItem onClick={e => navigate(e, "/devices")}>Devices</MenuItem>
             </Menu>
         </div>
     );

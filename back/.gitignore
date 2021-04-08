@@ -3,3 +3,4 @@ pkg/
 .idea/
 github.com/
 .DS_STORE
+gin-bin

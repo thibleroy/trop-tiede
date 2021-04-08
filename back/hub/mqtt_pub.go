@@ -5,6 +5,7 @@ import (
 	ttmqtt "back/lib/mqtt"
 	"encoding/json"
 	"fmt"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
 )
 
@@ -14,18 +15,11 @@ func main(){
 	ttmqtt.ConnectMqttClient(lib.MqttClient)
 	for {
 		data := lib.IRoomData{
+			Resource:    lib.IResource{},
 			Temperature: 20.5,
-			Device:      lib.IDevice{
-				DeviceDescription: lib.IDeviceDescription{
-					Description: lib.IDescription{
-						Name:    "ESP32 uPesy",
-						Details: "La carte uPesy ESP32 WROVER DevKit est basée sur un ESP32. " +
-							"Cette carte peut être mise sur une breadboard facilement car les 2 " +
-							"côtés de la carte sont accessibles pour mettre des fils sur la breadboard.",
-					},
-					SerialNumber: "azhefdzj12frezd",
-				},
-			},
+			Time:        time.Time{},
+			RoomId:      primitive.ObjectID{},
+			DeviceId:    primitive.ObjectID{},
 		}
 		payload,_ := json.Marshal(data)
 		fmt.Println("*******************")

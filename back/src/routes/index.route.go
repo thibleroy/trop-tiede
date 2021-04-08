@@ -8,4 +8,5 @@ func LoadRouters(router *mux.Router) {
 	router.StrictSlash(true)
 	loadUserControllers(router)
 	loadRoomsControllers(router)
+	loadDevicesControllers(router)
 }

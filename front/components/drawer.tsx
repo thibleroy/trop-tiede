@@ -1,4 +1,4 @@
-import {Drawer, ListItem, List, ClickAwayListener, Modal} from "@material-ui/core";
+import {Drawer, ListItem, List, Modal} from "@material-ui/core";
 import React from "react";
 import {useSelector, useDispatch} from 'react-redux'
 import {Dispatch} from "redux";
@@ -7,7 +7,7 @@ import {RootState} from "../redux/reducers/rootReducer";
 import {IRoom, IRoomsResponse} from "../lib/types";
 import {useRouter} from "next/router";
 import HomeBtn from "../components/homeBtn";
-import { Button } from '@material-ui/core';
+import {Button} from '@material-ui/core';
 import {Add} from "@material-ui/icons";
 import DrawerToggler from "./drawerToggler";
 
@@ -36,12 +36,13 @@ const TTDrawer = ({Rooms}: IRoomsResponse) => {
 
     const addRoom = async (e: React.MouseEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const room : IRoom = {RoomDescription: {
-            Description: {Details: "test details", Name: "test name"},
-                Position: {Latitude: 2, Longitude: 3}}
+        const room: IRoom = {
+            RoomDescription: {
+                Description: {Details: "test details", Name: "test name"}
+            }
         };
         const res = await fetch(
-            process.env.NEXT_PUBLIC_WEBSERVER_URL + '/rooms',
+            process.env.NEXT_PUBLIC_API + '/rooms',
             {
                 body: JSON.stringify(room),
                 headers: {
@@ -50,17 +51,16 @@ const TTDrawer = ({Rooms}: IRoomsResponse) => {
                 method: 'POST'
             }
         );
-
-        console.log('post create', res.redirected);
+        console.log('post create', res.headers.entries());
         handleClose();
     };
 
     const body = (
-            <form onSubmit={addRoom}>
-                <label htmlFor="name">Name</label>
-                <input id="name" type="text" autoComplete="name" required/>
-                <button type="submit">Register</button>
-            </form>
+        <form onSubmit={addRoom}>
+            <label htmlFor="name">Name</label>
+            <input id="name" type="text" autoComplete="name" required/>
+            <button type="submit">Register</button>
+        </form>
     );
     return (
         <Drawer open={drawerState.value} onEscapeKeyDown={clickAwayHandler} onBackdropClick={clickAwayHandler}>
@@ -77,9 +77,10 @@ const TTDrawer = ({Rooms}: IRoomsResponse) => {
             </Modal>
             <List>
                 {Rooms.map((room: IRoom) => (
-                    <ListItem key={room.Resource?.ID}>
-                       <Button onClick={e => navigate(e, room.Resource?.ID)}>{room.RoomDescription.Description.Name}</Button>
-                    </ListItem>
+                        <ListItem key={room.Resource?.ID}>
+                            <Button
+                                onClick={e => navigate(e, room.Resource?.ID)}>{room.RoomDescription.Description.Name}</Button>
+                        </ListItem>
                     )
                 )}
             </List>

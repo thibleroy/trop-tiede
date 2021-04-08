@@ -7,6 +7,12 @@ export interface  IResource {
 export interface  IRoomData {
     Temperature: number
     Time: Date
+    Room_ID: string
+}
+
+export interface IDevice {
+    Resource: IResource;
+    DeviceDescription: IDeviceDescription;
 }
 
 export interface  IRoom {
@@ -14,8 +20,13 @@ export interface  IRoom {
     RoomDescription: IRoomDescription;
 }
 
-interface IRoomDescription {
-    Position: IPosition
+export interface IRoomDescription {
+    Description: IDescription;
+}
+
+export interface IDeviceDescription  {
+    SerialNumber: string;
+    Position?: IPosition;
     Description: IDescription
 }
 
@@ -29,9 +40,28 @@ interface IPosition {
     Longitude: number;
 }
 
-export interface  IRoomsResponse {
+export interface IResponse {
+    StatusCode: number;
+    Result: any;
+}
+
+export interface IRoomResponse {
+    Room: IRoom
+}
+
+export interface IRoomsResponse {
     Rooms: IRoom[]
 }
+
+export interface IDevicesResponse {
+    Devices: IDevice[]
+}
+
+export interface IError {
+    Message: string
+    Code:    number
+}
+
 export interface  IEnvironment {
     WebServerPort: number
     MongoURL: string

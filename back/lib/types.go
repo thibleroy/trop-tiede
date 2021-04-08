@@ -6,11 +6,11 @@ import (
 )
 
 type IRoomData struct {
-	Resource IResource
+	Resource    IResource
 	Temperature float64
-	Time time.Time
-	Device IDevice
-	Room IRoom
+	Time        time.Time
+	RoomId      primitive.ObjectID
+	DeviceId 	primitive.ObjectID
 }
 
 type IDevice struct {
@@ -24,17 +24,18 @@ type IRoom struct {
 }
 
 type IRoomDescription struct {
-	Position IPosition
 	Description IDescription
 }
 
 type IDeviceDescription struct {
-	Description IDescription
+	Position IPosition
 	SerialNumber string
+	Description IDescription
 }
 
-type IRoomsResponse struct {
-	Rooms []IRoom
+type IResponse struct {
+	StatusCode int
+	Result interface{}
 }
 
 type IRoomDataResponse struct {
@@ -73,9 +74,24 @@ type IUser struct {
 }
 
 type IError struct {
-	Error   error
 	Message string
 	Code    int
+}
+
+type IRoomResponse struct {
+	Room IRoom
+}
+
+type IRoomsResponse struct {
+	Rooms []IRoom
+}
+
+type IDeviceResponse struct {
+	Device IDevice
+}
+
+type IDevicesResponse struct {
+	Devices []IDevice
 }
 
 type IResource struct {
