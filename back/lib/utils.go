@@ -38,7 +38,6 @@ func GetServerEnv() IEnvironment {
 	serverEnvironment = IEnvironment{
 		WebServerPort: wsPort,
 		MongoURL:      mongoURLStr,
-		MongoPort:     mongoPort,
 		JwtSecret:     jwtSecretStr,
 		MqttBrokerURL: mqttURLStr,
 		MqttBrokerPort: mqttPort,
