@@ -3,31 +3,37 @@ package db
 import (
 	"context"
 	"fmt"
+	"time"
+	"log"
+
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"log"
-	"strconv"
-	"time"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-func initMongoConn(uri string) mongo.Client {
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI("mongodb://" + uri + "/"))
+func InitDB(url string) mongo.Database {
+	client, err := mongo.NewClient(options.Client().ApplyURI(url))
 	if err != nil {
 		log.Fatal(err)
 	}
-	return *client
-}
-
-func InitDB(url string, port int, dbName string) mongo.Database {
-	uri := url + ":" + strconv.Itoa(port)
-	client := initMongoConn(uri)
-	ctx, c := context.WithTimeout(context.Background(), 2*time.Second)
-	defer c()
-	if client.Ping(ctx, nil) != nil {
-		log.Fatal("Error pinging mongoDB")
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	err = client.Connect(ctx)
+	if err != nil {
+		log.Fatal(err)
 	}
-	fmt.Println("connected to mongo database", uri)
-	return *client.Database(dbName)
+	defer client.Disconnect(ctx)
+	err = client.Ping(ctx, readpref.Primary())
+	if err != nil {
+		log.Fatal(err)
+	}
+	databases, err := client.ListDatabaseNames(ctx, bson.M{})
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(databases)
+
+	return *client.Database("test")
 }
 
 

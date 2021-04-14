@@ -36,8 +36,7 @@ func main(){
 	lib.MqttClient = ttmqtt.InitMqttClient(lib.Environment.MqttBrokerURL, lib.Environment.MqttBrokerPort, lib.Environment.MqttClientId, lib.Environment.MqttUsername, lib.Environment.MqttPassword)
 	ttmqtt.ConnectMqttClient(lib.MqttClient)
 	ttmqtt.Sub(lib.MqttClient, "#", temperatureReceivedHandler)
-	dbName := "trop-tiede"
 	// retrieves Mongo.Database instance
-	lib.MyMusicAPIDB = db.InitDB(lib.Environment.MongoURL, lib.Environment.MongoPort, dbName)
+	lib.MyMusicAPIDB = db.InitDB(lib.Environment.MongoURL)
 	select {}
 }

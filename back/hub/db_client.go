@@ -9,9 +9,8 @@ import (
 
 func Init(){
 	lib.Environment = lib.GetServerEnv()
-	dbName := "trop-tiede"
 	// retrieves Mongo.Database instance
-	lib.MyMusicAPIDB = db.InitDB(lib.Environment.MongoURL, lib.Environment.MongoPort, dbName)
+	lib.MyMusicAPIDB = db.InitDB(lib.Environment.MongoURL)
 }
 
 func addDevice(){

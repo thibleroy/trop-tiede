@@ -21,7 +21,7 @@ func InitBackEnd(env lib.IEnvironment) {
 	middlewares.LoadMiddlewares(lib.Router)
 
 	// retrieves Mongo.Database instance
-	lib.MyMusicAPIDB = db.InitDB(env.MongoURL, env.MongoPort, lib.DBname)
+	lib.MyMusicAPIDB = db.InitDB(lib.Environment.MongoURL)
 
 	// initializes the http server with previously created Mux router
 	http.InitWebServer(env.WebServerPort, lib.Router)
