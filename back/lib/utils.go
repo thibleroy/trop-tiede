@@ -34,7 +34,6 @@ func GetServerEnv() IEnvironment {
 
 	var serverEnvironment IEnvironment
 	wsPort, _ := strconv.Atoi(wspStr)
-	mongoPort, _ := strconv.Atoi(mongoPortStr)
 	mqttPort, _ := strconv.Atoi(mqttPortStr)
 	serverEnvironment = IEnvironment{
 		WebServerPort: wsPort,
