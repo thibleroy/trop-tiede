@@ -1,23 +1,39 @@
 export interface  IResource {
-    ID: string
-    CreatedAt: Date
-    UpdatedAt: Date
+    ID: string;
+    CreatedAt: Date;
+    UpdatedAt: Date;IData
 }
 
-export interface  IRoomData {
-    Temperature: number
-    Time: Date
-    Room_ID: string
+export interface IData {
+    Resource: IResource;
+    Temperature: number;
+    Time: Date;
+    DeviceId: string;
+}
+
+export interface IDeviceData {
+    DeviceId: IDevice;
+    Data: IData[];
+}
+
+export interface IDeviceDatas {
+    Data: IDeviceData[];
+}
+
+export interface IDeviceDataResponse {
+    DeviceData: IDeviceData[];
 }
 
 export interface IDevice {
     Resource: IResource;
     DeviceDescription: IDeviceDescription;
+    RoomId: string;
 }
 
 export interface  IRoom {
     Resource?: IResource;
     RoomDescription: IRoomDescription;
+    DeviceIds: string[];
 }
 
 export interface IRoomDescription {
@@ -27,7 +43,7 @@ export interface IRoomDescription {
 export interface IDeviceDescription  {
     SerialNumber: string;
     Position?: IPosition;
-    Description: IDescription
+    Description: IDescription;
 }
 
 interface IDescription {
@@ -41,12 +57,28 @@ interface IPosition {
 }
 
 export interface IResponse {
-    StatusCode: number;
-    Result: any;
+    Status: IStatus
+    Body: IBody
+    Headers: IHeader[];
+}
+
+export interface IBody {
+    Value: any;
+    Message: string;
+}
+
+export interface IHeader {
+    Key: string;
+    Value: string;
+}
+
+export interface IStatus {
+    Message: string;
+    Code:    number;
 }
 
 export interface IRoomResponse {
-    Room: IRoom
+    Room: IRoom;
 }
 
 export interface IRoomsResponse {
@@ -54,41 +86,44 @@ export interface IRoomsResponse {
 }
 
 export interface IDevicesResponse {
-    Devices: IDevice[]
+    Devices: IDevice[];
+}
+
+export interface IDeviceResponse {
+    Device: IDevice
 }
 
 export interface IError {
-    Message: string
-    Code:    number
+    Message: string;
+    Code:    number;
 }
 
 export interface  IEnvironment {
-    WebServerPort: number
-    MongoURL: string
-    MongoPort: number
-    JwtSecret: string
-    MqttBrokerURL: string
-    MqttBrokerPort: number
-    MqttClientId: string
-    MqttUsername: string
-    MqttPassword: string
-    MqttTemperatureTopic: string
+    WebServerPort: number;
+    MongoURL: string;
+    MongoPort: number;
+    JwtSecret: string;
+    MqttBrokerURL: string;
+    MqttBrokerPort: number;
+    MqttClientId: string;
+    MqttUsername: string;
+    MqttPassword: string;
+    MqttTemperatureTopic: string;
 }
 
 export interface IPostReturn {
-    ID: string
+    ID: string;
 }
 
 export interface  IUser {
-    Resource:  IResource
-    FirstName: string
-    LastName:  string
-    Email:     string
-    Password:  string
+    Resource:  IResource;
+    FirstName: string;
+    LastName:  string;
+    Email:     string;
+    Password:  string;
 }
 
 export interface  IError {
-    Error:   Error
-    Message: string
-    Code:    number
+    Message: string;
+    Code:    number;
 }

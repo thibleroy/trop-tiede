@@ -1,16 +1,26 @@
-package db
+package utils
 
 import (
+	"back/lib"
 	"context"
 	"fmt"
 	"time"
 	"log"
-
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
+
+func NewResource() lib.IResource {
+	creationTime := time.Now()
+	return lib.IResource{
+		ID:        primitive.NewObjectIDFromTimestamp(creationTime),
+		CreatedAt: creationTime,
+		UpdatedAt: creationTime,
+	}
+}
 
 func InitDB(url string) mongo.Database {
 	client, err := mongo.NewClient(options.Client().ApplyURI(url))
@@ -35,6 +45,3 @@ func InitDB(url string) mongo.Database {
 
 	return *client.Database("test")
 }
-
-
-

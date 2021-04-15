@@ -2,80 +2,76 @@ package controllers
 
 import (
 	"back/lib"
+	"back/lib/utils"
 	"back/src/services"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"io/ioutil"
 	"log"
 	"net/http"
 )
 
-func PostUserController (w http.ResponseWriter, req *http.Request) {
-	var user lib.IUser
-	bodyUser,_ := ioutil.ReadAll(req.Body)
-	err := json.Unmarshal(bodyUser, &user)
-	if err != nil {
-		fmt.Println("error")
-		log.Fatal(err)
-	}
-	user.Resource = lib.NewResource()
-	user.Password = lib.GetHash([]byte(user.Password))
-	returnId, err := services.UserSignup(user)
-	w.Header().Add("Location", "http://" + req.Host + req.RequestURI + "/" + returnId.Hex())
-	w.WriteHeader(201)
-}
-
 func GetUserController (w http.ResponseWriter, req *http.Request) {
 	id := mux.Vars(req)["id"]
-	fmt.Println("id received for get", id)
-	objId, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		log.Fatal(err)
+	objId := utils.VerifyId(w, id)
+	if objId != utils.EmptyId() {
+		user, serviceStatus := services.RetrieveUser(objId)
+		UserResponse := lib.IUserResponse{
+			User: user,
+		}
+		utils.WriteToClient(w, utils.BuildResponse(UserResponse, utils.EmptyHeaders(), serviceStatus))
 	}
-	user, getError := services.RetrieveUser(objId)
-	if getError != nil {
-		w.WriteHeader(404)
-		return
-	}
-	value, _ := json.Marshal(user)
-	w.Write(value)
 }
 
-func PutUserController (w http.ResponseWriter, req *http.Request) {
-	id := mux.Vars(req)["id"]
-	fmt.Println("id received for put", id)
-	objId, errId := primitive.ObjectIDFromHex(id)
-	if errId != nil {
-		log.Fatal(errId)
-	}
-	var user lib.IUser
+func GetUsersController (w http.ResponseWriter, req *http.Request) {
+	Users, serviceStatus := services.RetrieveAllUsers()
+	UsersResponse := lib.IUsersResponse{Users: Users}
+	utils.WriteToClient(w, utils.BuildResponse(UsersResponse, utils.EmptyHeaders(), serviceStatus))
+}
+
+func PostUserController (w http.ResponseWriter, req *http.Request) {
+	var Users lib.IUser
 	bodyUser,_ := ioutil.ReadAll(req.Body)
-	err := json.Unmarshal(bodyUser, &user)
+	err := json.Unmarshal(bodyUser, &Users)
 	if err != nil {
-		fmt.Println("error")
-		log.Fatal(err)
+		panic(err)
 	}
-	user.Resource.ID = objId
-	returnId, dbError := services.UpdateUser(user)
-	if dbError!=nil{
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(`{"message":"`+dbError.Error()+`"}`))
-		return
+	Users.Resource = utils.NewResource()
+	returnId, serviceStatus := services.AddUser(Users)
+	header := lib.IHeader{
+		Key:   "Location",
+		Value: "http://" + req.Host + req.RequestURI + "/" + returnId.Hex(),
 	}
-	w.WriteHeader(204)
-	w.Header().Add("Location", req.Host + req.RequestURI + "/" + returnId.Hex())
+	utils.WriteToClient(w, utils.BuildResponse(nil, []lib.IHeader{header}, serviceStatus))
 }
 
 func DeleteUserController (w http.ResponseWriter, req *http.Request) {
 	id := mux.Vars(req)["id"]
-	fmt.Println("id received for delete", id)
-	objId, errId := primitive.ObjectIDFromHex(id)
-	if errId != nil {
-		log.Fatal(errId)
+	objId := utils.VerifyId(w, id)
+	if objId != utils.EmptyId() {
+		deleteId, serviceStatus := services.RemoveUser(objId)
+		utils.WriteToClient(w, utils.BuildResponse(deleteId, utils.EmptyHeaders(), serviceStatus))
 	}
-	_, _ = services.RemoveUser(objId)
-	w.WriteHeader(204)
 }
 
+func PutUserController (w http.ResponseWriter, req *http.Request) {
+	id := mux.Vars(req)["id"]
+	objId := utils.VerifyId(w, id)
+	if objId != utils.EmptyId() {
+		var Users lib.IUser
+		bodyTrack,_ := ioutil.ReadAll(req.Body)
+		err := json.Unmarshal(bodyTrack, &Users)
+		if err != nil {
+			fmt.Println("error")
+			log.Fatal(err)
+		}
+		Users.Resource.ID = objId
+		returnId, serviceStatus := services.UpdateUser(Users)
+		header := lib.IHeader{
+			Key:   "Location",
+			Value: "http://" + req.Host + req.RequestURI + "/" + returnId.Hex(),
+		}
+		utils.WriteToClient(w, utils.BuildResponse(nil, []lib.IHeader{header}, serviceStatus))
+	}
+}

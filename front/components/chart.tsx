@@ -1,21 +1,23 @@
 import loadable from "@loadable/component";
-import {IRoomData} from "../lib/types";
+import {IData, IDeviceData, IDeviceDatas} from "../lib/types";
 import {ApexOptions} from "apexcharts";
-
 const ReactApexChart = loadable(() => import('react-apexcharts'), {ssr: false});
 
-function Chart({roomData}: {roomData: IRoomData[]}) {
-    console.log("data in chart component", roomData);
-    const _s: number[] = [];
-    const chartOptions: ApexOptions = {title: {text: "Temperature"}};
-    chartOptions.series = [{data: [], name: "Temperature"}];
-    if (roomData) {
-        roomData.filter((dataValue: IRoomData) => {
-            _s.push(dataValue.Temperature);
-            chartOptions.xaxis?.categories.push(dataValue.Time);
+function Chart({Data}: IDeviceDatas) {
+    console.log("data in chart component", Data);
+    const chartOptions: ApexOptions = {title: {text: "Temperature"}, series: []};
+    const series: ApexAxisChartSeries = [];
+    if (Data) {
+        Data.forEach((deviceData: IDeviceData) => {
+            const _s: number[] = [];
+            deviceData.Data.forEach((data: IData) => {
+                _s.push(data.Temperature);
+                chartOptions.xaxis?.categories.push(data.Time);
+            });
+            series.push({data: _s, name: deviceData.Device.DeviceDescription.Description.Name});
         });
-        chartOptions.series = [{data: _s, name: "Temperature"}];
     }
+    chartOptions.series = series;
     return(
         <div>
             <ReactApexChart options={chartOptions} series={chartOptions.series} type="line" width={500}

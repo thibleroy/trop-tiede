@@ -2,6 +2,7 @@ package services
 
 import (
 	"back/lib"
+	"back/lib/utils"
 	"context"
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
@@ -13,71 +14,52 @@ import (
 const roomCollectionName = "room"
 const temperatureCollectionName = "temperature"
 
-func RetrieveRoom(id primitive.ObjectID) (lib.IRoom, error) {
+func RetrieveRoom(id primitive.ObjectID) (lib.IRoom, lib.IStatus) {
 	roomToRetrieve := lib.IRoom{}
 	err := lib.MyMusicAPIDB.Collection(roomCollectionName).FindOne(context.TODO(), bson.M{"resource.id": id}).Decode(&roomToRetrieve)
 	if err != nil {
-		return lib.IRoom{}, err
+		return lib.IRoom{}, utils.FindError(roomCollectionName, 404)
 	}
-	return roomToRetrieve, nil
+	return roomToRetrieve, utils.FindSuccess(roomCollectionName, 200)
 }
 
-func RetrieveRoomData(id primitive.ObjectID, startDate time.Time, endDate time.Time) ([]lib.IRoomData, error) {
-	roomDataToRetrieve := make([]lib.IRoomData, 0)
-	fmt.Println("startdate", startDate.Unix(), "enddate", endDate.Unix())
-	cursor, _ := lib.MyMusicAPIDB.Collection(temperatureCollectionName).Find(context.TODO(), bson.M{"deviceid": id, "time": bson.M{"$lte": endDate, "$gte": startDate}})
-	err := cursor.All(context.TODO(), &roomDataToRetrieve)
-	if err != nil {
-		return nil, err
-	}
-	fmt.Println("data retrieved", &roomDataToRetrieve)
-	return roomDataToRetrieve, nil
-}
-
-func AddRoomData(roomData lib.IRoomData) (primitive.ObjectID, error) {
-	fmt.Println("roomData", roomData)
-	roomData.Resource = lib.NewResource()
-	_, err := lib.MyMusicAPIDB.Collection(temperatureCollectionName).InsertOne(context.TODO(), roomData)
-	if err != nil {
-		return primitive.ObjectID{}, err
-	}
-	return roomData.Resource.ID, nil
-}
-
-func AddRoom(room lib.IRoom) (primitive.ObjectID, error) {
+func AddRoom(room lib.IRoom) (primitive.ObjectID, lib.IStatus) {
 	fmt.Println("room", room)
-	room.Resource = lib.NewResource()
+	room.Resource = utils.NewResource()
 	_, err := lib.MyMusicAPIDB.Collection(roomCollectionName).InsertOne(context.TODO(), room)
 	if err != nil {
-		return primitive.ObjectID{}, err
+		return primitive.ObjectID{}, utils.UpdateError("insert", roomCollectionName, 500)
 	}
-	return room.Resource.ID, nil
+	return room.Resource.ID, utils.UpdateSuccess("insert", roomCollectionName, 201)
 }
 
-func UpdateRoom(room lib.IRoom) (primitive.ObjectID, error) {
+func UpdateRoom(room lib.IRoom) (primitive.ObjectID, lib.IStatus) {
 	updateTime := time.Now()
 	room.Resource.UpdatedAt = updateTime
-	_, err := lib.MyMusicAPIDB.Collection(roomCollectionName).UpdateOne(context.TODO(),bson.M{"resource.id": room.Resource.ID}, room)
+	_, err := lib.MyMusicAPIDB.Collection(roomCollectionName).UpdateOne(context.TODO(),bson.M{"resource.id": room.Resource.ID}, bson.M{
+		"$set": room,
+	})
 	if err != nil {
-		return primitive.ObjectID{}, err
+		fmt.Println("err", err)
+		return primitive.ObjectID{}, utils.UpdateError("update", roomCollectionName, 500)
 	}
-	return room.Resource.ID, nil
+	return room.Resource.ID, utils.UpdateSuccess("update", roomCollectionName, 201)
 }
 
-func RetrieveAllRooms() ([]lib.IRoom, error) {
+func RetrieveAllRooms() ([]lib.IRoom, lib.IStatus) {
 	retrievedRooms := make([]lib.IRoom, 0)
 	cursor,_ := lib.MyMusicAPIDB.Collection(roomCollectionName).Find(context.TODO(), bson.M{})
 	err := cursor.All(context.TODO(), &retrievedRooms)
 	if err != nil {
-		return nil, err
+		return nil, utils.FindError("rooms", 404)
 	}
-	return retrievedRooms, nil
+	return retrievedRooms, utils.FindSuccess("rooms", 200)
 }
 
-func RemoveRoom(id primitive.ObjectID) (primitive.ObjectID, error){
+func RemoveRoom(id primitive.ObjectID) (primitive.ObjectID, lib.IStatus){
 	_, err := lib.MyMusicAPIDB.Collection(roomCollectionName).DeleteOne(context.TODO(), bson.M{"resource.id": id})
 	if err != nil {
-		return primitive.ObjectID{}, err
+		return primitive.ObjectID{}, utils.UpdateError("remove", roomCollectionName, 500)
 	}
-	return id, nil
+	return id, utils.UpdateError("remove", roomCollectionName, 200)
 }

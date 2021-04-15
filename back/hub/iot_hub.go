@@ -2,8 +2,7 @@ package main
 
 import (
 	"back/lib"
-	"back/lib/db"
-	ttmqtt "back/lib/mqtt"
+	"back/lib/utils"
 	"back/src/services"
 	"encoding/json"
 	"fmt"
@@ -37,6 +36,6 @@ func main(){
 	ttmqtt.ConnectMqttClient(lib.MqttClient)
 	ttmqtt.Sub(lib.MqttClient, "#", temperatureReceivedHandler)
 	// retrieves Mongo.Database instance
-	lib.MyMusicAPIDB = db.InitDB(lib.Environment.MongoURL)
+	lib.MyMusicAPIDB = utils.InitDB(lib.Environment.MongoURL)
 	select {}
 }

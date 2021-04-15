@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"back/lib"
+	"back/lib/utils"
 	"back/src/services"
 	"encoding/json"
 	"fmt"
@@ -10,118 +11,141 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"strconv"
-	"time"
 )
 
-func GetRoomController (w http.ResponseWriter, req *http.Request) {
-	id := mux.Vars(req)["id"]
-	objId, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		panic(err)
+func GetRoomController(w http.ResponseWriter, req *http.Request) {
+	id := mux.Vars(req)["roomId"]
+	objId := utils.VerifyId(w, id)
+	if objId != utils.EmptyId() {
+		room, serviceStatus := services.RetrieveRoom(objId)
+		roomResponse := lib.IRoomResponse{
+			Room: room,
+		}
+		utils.WriteToClient(w, utils.BuildResponse(roomResponse, utils.EmptyHeaders(), serviceStatus))
 	}
-	room, err := services.RetrieveRoom(objId)
-	roomResponse := lib.IRoomResponse{
-		Room: room,
-	}
-	lib.WriteToClient(w, lib.BuildResponse(roomResponse, err))
 }
 
-func GetRoomsController (w http.ResponseWriter, req *http.Request) {
-	rooms, err := services.RetrieveAllRooms()
-	roomsReponse := lib.IRoomsResponse{Rooms: rooms}
-	lib.WriteToClient(w, lib.BuildResponse(roomsReponse, err))
+func GetRoomsController(w http.ResponseWriter, req *http.Request) {
+	rooms, serviceStatus := services.RetrieveAllRooms()
+	roomsResponse := lib.IRoomsResponse{Rooms: rooms}
+	fmt.Println("rooms", roomsResponse)
+	utils.WriteToClient(w, utils.BuildResponse(roomsResponse, utils.EmptyHeaders(), serviceStatus))
 }
 
-func PostRoomDataController (w http.ResponseWriter, req *http.Request) {
-	var roomData lib.IRoomData
-	bodyRoom,_ := ioutil.ReadAll(req.Body)
-	err := json.Unmarshal(bodyRoom, &roomData)
-	if err != nil {
-		fmt.Println("error")
-		log.Fatal(err)
-	}
-	roomData.Resource = lib.NewResource()
-	returnId, serror := services.AddRoomData(roomData)
-	if serror != nil {
-		panic(serror)
-	}
-	w.Header().Add("Location", "http://" + req.Host + req.RequestURI + "/" + returnId.Hex())
-	w.WriteHeader(201)
-}
-
-func PostRoomController (w http.ResponseWriter, req *http.Request) {
+func PostRoomController(w http.ResponseWriter, req *http.Request) {
 	var room lib.IRoom
-	bodyRoom,_ := ioutil.ReadAll(req.Body)
+	bodyRoom, _ := ioutil.ReadAll(req.Body)
 	err := json.Unmarshal(bodyRoom, &room)
 	if err != nil {
 		panic(err)
 	}
-	room.Resource = lib.NewResource()
-	returnId, serror := services.AddRoom(room)
-	if serror != nil {
-		panic(serror)
+	room.Resource = utils.NewResource()
+	room.DeviceIds = make([]primitive.ObjectID, 0)
+	returnId, serviceStatus := services.AddRoom(room)
+	header := lib.IHeader{
+		Key:   "Location",
+		Value: "http://" + req.Host + req.RequestURI + "/" + returnId.Hex(),
 	}
-	w.Header().Add("Location", "http://" +req.Host + req.RequestURI + "/" + returnId.Hex())
-	w.WriteHeader(201)
+	utils.WriteToClient(w, utils.BuildResponse(nil, []lib.IHeader{header}, serviceStatus))
 }
 
-func GetRoomDataController (w http.ResponseWriter, req *http.Request) {
-	id := mux.Vars(req)["id"]
-	startDateInt,_ := strconv.ParseInt(req.URL.Query().Get("startDate"), 10, 64)
-	endDateInt,_ := strconv.ParseInt(req.URL.Query().Get("endDate"), 10, 64)
-	startDate := time.Unix(startDateInt, 0)
-	endDate := time.Unix(endDateInt, 0)
-	fmt.Println("id received for get data", id)
-	objId, errId := primitive.ObjectIDFromHex(id)
-	if errId != nil {
-		log.Fatal(errId)
+func DeleteRoomController(w http.ResponseWriter, req *http.Request) {
+	id := mux.Vars(req)["roomId"]
+	objId := utils.VerifyId(w, id)
+	if objId != utils.EmptyId() {
+		deleteId, serviceStatus := services.RemoveRoom(objId)
+		utils.WriteToClient(w, utils.BuildResponse(deleteId, utils.EmptyHeaders(), serviceStatus))
 	}
-	roomData, dbError := services.RetrieveRoomData(objId, startDate, endDate)
-	if dbError != nil {
-		w.WriteHeader(404)
-		return
-	}
-	a := lib.IRoomDataResponse{RoomData: roomData}
-	value, merr := json.Marshal(a)
-	if merr != nil {
-		panic(merr)
-	}
-	w.Write(value)
 }
 
-func DeleteRoomController (w http.ResponseWriter, req *http.Request) {
-	id := mux.Vars(req)["id"]
-	fmt.Println("id received for put", id)
-	objId, errId := primitive.ObjectIDFromHex(id)
-	if errId != nil {
-		log.Fatal(errId)
+func PutRoomController(w http.ResponseWriter, req *http.Request) {
+	id := mux.Vars(req)["roomId"]
+	objId := utils.VerifyId(w, id)
+	if objId != utils.EmptyId() {
+		var room lib.IRoom
+		bodyRoom, _ := ioutil.ReadAll(req.Body)
+		err := json.Unmarshal(bodyRoom, &room)
+		if err != nil {
+			fmt.Println("error")
+			log.Fatal(err)
+		}
+		room.Resource.ID = objId
+		returnId, serviceStatus := services.UpdateRoom(room)
+
+		header := lib.IHeader{
+			Key:   "Location",
+			Value: "http://" + req.Host + req.RequestURI + "/" + returnId.Hex(),
+		}
+		utils.WriteToClient(w, utils.BuildResponse(nil, []lib.IHeader{header}, serviceStatus))
 	}
-	_, _ = services.RemoveRoom(objId)
-	w.WriteHeader(204)
 }
 
-func PutRoomController (w http.ResponseWriter, req *http.Request) {
-	id := mux.Vars(req)["id"]
-	fmt.Println("id received for put", id)
-	objId, errId := primitive.ObjectIDFromHex(id)
-	if errId != nil {
-		log.Fatal(errId)
+func GetRoomDevicesController(w http.ResponseWriter, req *http.Request) {
+	id := mux.Vars(req)["roomId"]
+	objId := utils.VerifyId(w, id)
+	if objId != utils.EmptyId() {
+		room, roomStatus := services.RetrieveRoom(objId)
+		if roomStatus.Code == 404 {
+			utils.WriteToClient(w, utils.BuildResponse(nil, utils.EmptyHeaders(), roomStatus))
+		} else {
+			devices := make([]lib.IDevice, 0)
+			for _, deviceId := range room.DeviceIds {
+				device, deviceStatus := services.RetrieveDevice(deviceId)
+				if deviceStatus.Code == 404 {
+					utils.WriteToClient(w, utils.BuildResponse(nil, utils.EmptyHeaders(), deviceStatus))
+					return
+				} else {
+					devices = append(devices, device)
+				}
+			}
+			utils.WriteToClient(w, utils.BuildResponse(devices, utils.EmptyHeaders(), utils.FindSuccess("devices", 200)))
+		}
 	}
-	var room lib.IRoom
-	bodyTrack,_ := ioutil.ReadAll(req.Body)
-	err := json.Unmarshal(bodyTrack, &room)
-	if err != nil {
-		fmt.Println("error")
-		log.Fatal(err)
+}
+
+func PostRoomDeviceController(w http.ResponseWriter, req *http.Request) {
+	roomId := mux.Vars(req)["roomId"]
+	roomObjId := utils.VerifyId(w, roomId)
+	if roomObjId != utils.EmptyId() {
+		room, roomStatus := services.RetrieveRoom(roomObjId)
+		if roomStatus.Code == 404 {
+			utils.WriteToClient(w, utils.BuildResponse(nil, utils.EmptyHeaders(), roomStatus))
+		} else {
+			var device lib.IDevice
+			bodyDevice, _ := ioutil.ReadAll(req.Body)
+			err := json.Unmarshal(bodyDevice, &device)
+			if err != nil {
+				fmt.Println("error")
+				log.Fatal(err)
+			}
+			room.DeviceIds = append(room.DeviceIds, device.Resource.ID)
+			updateId, status := services.UpdateRoom(room)
+			utils.WriteToClient(w, utils.BuildResponse(updateId, utils.EmptyHeaders(), status))
+		}
 	}
-	room.Resource.ID = objId
-	returnId, dbError := services.UpdateRoom(room)
-	if dbError != nil{
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(`{"message":"`+dbError.Error()+`"}`))
-		return
+}
+
+func DeleteRoomDeviceController(w http.ResponseWriter, req *http.Request) {
+	roomId := mux.Vars(req)["roomId"]
+	roomObjId := utils.VerifyId(w, roomId)
+	if roomObjId != utils.EmptyId() {
+		room, roomStatus := services.RetrieveRoom(roomObjId)
+		if roomStatus.Code == 404 {
+			utils.WriteToClient(w, utils.BuildResponse(nil, utils.EmptyHeaders(), roomStatus))
+		} else {
+			deviceId := mux.Vars(req)["deviceId"]
+			deviceObjId := utils.VerifyId(w, deviceId)
+			if deviceObjId != utils.EmptyId() {
+				newDevices := make([]primitive.ObjectID, 0)
+				for _, val := range room.DeviceIds {
+					if val != deviceObjId {
+						newDevices = append(newDevices, val)
+					}
+				}
+				room.DeviceIds = newDevices
+				updateId, status := services.UpdateRoom(room)
+				utils.WriteToClient(w, utils.BuildResponse(updateId, utils.EmptyHeaders(), status))
+			}
+		}
 	}
-	w.WriteHeader(204)
-	w.Header().Add("Location", req.Host + req.RequestURI + "/" + returnId.Hex())
 }

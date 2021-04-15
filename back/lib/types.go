@@ -5,22 +5,23 @@ import (
 	"time"
 )
 
-type IRoomData struct {
-	Resource    IResource
-	Temperature float64
-	Time        time.Time
-	RoomId      primitive.ObjectID
-	DeviceId 	primitive.ObjectID
-}
-
 type IDevice struct {
 	Resource IResource
 	DeviceDescription IDeviceDescription
+	RoomId primitive.ObjectID
+}
+
+type IDeviceData struct {
+	Resource    IResource
+	Temperature float64
+	Time        time.Time
+	DeviceId 	primitive.ObjectID
 }
 
 type IRoom struct {
 	Resource IResource
 	RoomDescription IRoomDescription
+	DeviceIds []primitive.ObjectID
 }
 
 type IRoomDescription struct {
@@ -34,12 +35,23 @@ type IDeviceDescription struct {
 }
 
 type IResponse struct {
-	StatusCode int
-	Result interface{}
+	Status IStatus
+	Body IBody
+	Headers []IHeader
 }
 
-type IRoomDataResponse struct {
-	RoomData []IRoomData
+type IBody struct {
+	Value interface{}
+	Message string
+}
+
+type IHeader struct {
+	Key string
+	Value string
+}
+
+type IDeviceDataResponse struct {
+	DeviceData []IDeviceData
 }
 
 type IPosition struct {
@@ -73,7 +85,7 @@ type IUser struct {
 	Password  string
 }
 
-type IError struct {
+type IStatus struct {
 	Message string
 	Code    int
 }
@@ -92,6 +104,14 @@ type IDeviceResponse struct {
 
 type IDevicesResponse struct {
 	Devices []IDevice
+}
+
+type IUserResponse struct {
+	User IUser
+}
+
+type IUsersResponse struct {
+	Users []IUser
 }
 
 type IResource struct {
