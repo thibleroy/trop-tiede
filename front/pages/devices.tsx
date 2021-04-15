@@ -1,33 +1,26 @@
 import {GetServerSideProps} from "next";
-import {IDevice, IDevicesResponse, IResponse} from "../lib/types";
+import {IBody, IDevice, IDevicesResponse, IResponse} from "../lib/types";
 import {List} from "@material-ui/core";
 import React from "react";
 import Device from "../components/device";
+import TTDevices from "../components/devices";
 
-const Devices = ({devices}: {devices: IDevicesResponse}) => {
+const Devices = ({Devices}:  IDevicesResponse) => {
+    console.log("devices", Devices);
     return (<div>
             <h1>Devices</h1>
-            <List>
-                {devices.Devices.map((device: IDevice) => (
-                   <Device key={device.Resource.ID}
-                           DeviceDescription={device.DeviceDescription}
-                           Resource={device.Resource}/>
-                    )
-                )}
-            </List>
+            <TTDevices Devices={Devices}/>
         </div>
     );
 }
 
 export const getServerSideProps: GetServerSideProps = async() => {
     const res = await fetch(process.env.NEXT_PUBLIC_API + '/devices');
-    const response: IResponse = await res.json();
+    const response: IBody = await res.json();
     console.log("resp devices", response);
-    const devices: IDevicesResponse = response.Result;
+    const devices: IDevicesResponse = response.Value;
     return {
-        props: {
-            devices
-        }
+        props: devices
     }
 }
 

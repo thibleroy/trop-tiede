@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"back/lib"
+	"back/lib/utils"
 	"context"
 	"encoding/json"
 	"go.mongodb.org/mongo-driver/bson"
@@ -30,7 +31,7 @@ func authMiddleware(next http.Handler) http.Handler {
 			w.Write([]byte(`{"response":"Wrong Password!"}`))
 			return
 		}
-		jwtToken, err := lib.GenerateJWT(lib.Environment.JwtSecret)
+		jwtToken, err := utils.GenerateJWT(lib.Environment.JwtSecret)
 		if err != nil{
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(`{"message":"`+err.Error()+`"}`))

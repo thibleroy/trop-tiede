@@ -2,61 +2,60 @@ package services
 
 import (
 	"back/lib"
+	"back/lib/utils"
 	"context"
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	_ "go.mongodb.org/mongo-driver/mongo"
 	"time"
 )
 
-const userCollectionName = "user"
+const UserCollectionName = "User"
 
-func RetrieveUser(id primitive.ObjectID) (*lib.IUser, error) {
+func RetrieveUser(id primitive.ObjectID) (lib.IUser, lib.IStatus) {
 	userToRetrieve := lib.IUser{}
-	err := lib.MyMusicAPIDB.Collection(userCollectionName).FindOne(context.TODO(), bson.M{"resource.id": id}).Decode(&userToRetrieve)
+	err := lib.MyMusicAPIDB.Collection(UserCollectionName).FindOne(context.TODO(), bson.M{"resource.id": id}).Decode(&userToRetrieve)
 	if err != nil {
-		print("err", err.Error())
-		return nil, err
+		return lib.IUser{}, utils.FindError(UserCollectionName, 404)
 	}
-	return &userToRetrieve, nil
+	return userToRetrieve, utils.FindSuccess(UserCollectionName, 200)
 }
 
-func UpdateUser(user lib.IUser) (*primitive.ObjectID, error) {
-	user.Resource.UpdatedAt = time.Now()
-	update := bson.M{
-		"$set": user,
-	}
-	_, err := lib.MyMusicAPIDB.Collection(userCollectionName).UpdateOne(context.TODO(),bson.M{"resource.id": user.Resource.ID}, update)
+func AddUser(user lib.IUser) (primitive.ObjectID, lib.IStatus) {
+	fmt.Println("User", user)
+	user.Resource = utils.NewResource()
+	_, err := lib.MyMusicAPIDB.Collection(UserCollectionName).InsertOne(context.TODO(), user)
 	if err != nil {
-		return nil, err
+		return primitive.ObjectID{}, utils.UpdateError("insert", UserCollectionName, 500)
 	}
-	return &user.Resource.ID, nil
+	return user.Resource.ID, utils.UpdateSuccess("insert", UserCollectionName, 201)
 }
 
-func UserSignup(user lib.IUser) (*primitive.ObjectID, error){
-	fmt.Println("user signup", &user)
-	_, err := lib.MyMusicAPIDB.Collection(userCollectionName).InsertOne(context.TODO(), user)
+func UpdateUser(user lib.IUser) (primitive.ObjectID, lib.IStatus) {
+	updateTime := time.Now()
+	user.Resource.UpdatedAt = updateTime
+	_, err := lib.MyMusicAPIDB.Collection(UserCollectionName).UpdateOne(context.TODO(),bson.M{"resource.id": user.Resource.ID}, user)
 	if err != nil {
-		return nil, err
+		return primitive.ObjectID{}, utils.UpdateError("update", UserCollectionName, 500)
 	}
-	return &user.Resource.ID, nil
+	return user.Resource.ID, utils.UpdateSuccess("update", UserCollectionName, 201)
 }
 
-func UserLogin(user lib.IUser) (*string, error) {
-	fmt.Println("user login", &user)
-	userToRetrieve := lib.IUser{}
-	err := lib.MyMusicAPIDB.Collection(userCollectionName).FindOne(context.TODO(), bson.M{"email": user.Email}).Decode(&userToRetrieve)
+func RetrieveAllUsers() ([]lib.IUser, lib.IStatus) {
+	retrievedUsers := make([]lib.IUser, 0)
+	cursor,_ := lib.MyMusicAPIDB.Collection(UserCollectionName).Find(context.TODO(), bson.M{})
+	err := cursor.All(context.TODO(), &retrievedUsers)
 	if err != nil {
-		print("err", err.Error())
-		return nil, err
+		return nil, utils.FindError("Users", 404)
 	}
-	return &userToRetrieve.Password, nil
+	return retrievedUsers, utils.FindSuccess("Users", 200)
 }
 
-func RemoveUser(id primitive.ObjectID) (*primitive.ObjectID, error){
-	_, err := lib.MyMusicAPIDB.Collection(userCollectionName).DeleteOne(context.TODO(), bson.M{"resource.id": id})
+func RemoveUser(id primitive.ObjectID) (primitive.ObjectID, lib.IStatus){
+	_, err := lib.MyMusicAPIDB.Collection(UserCollectionName).DeleteOne(context.TODO(), bson.M{"resource.id": id})
 	if err != nil {
-		return nil, err
+		return primitive.ObjectID{}, utils.UpdateError("remove", UserCollectionName, 500)
 	}
-	return &id, nil
+	return id, utils.UpdateError("remove", UserCollectionName, 200)
 }

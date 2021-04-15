@@ -2,83 +2,91 @@ package controllers
 
 import (
 	"back/lib"
+	"back/lib/utils"
 	"back/src/services"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
+	"time"
 )
 
 func GetDeviceController (w http.ResponseWriter, req *http.Request) {
-	id := mux.Vars(req)["id"]
-	objId, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		panic(err)
+	id := mux.Vars(req)["deviceId"]
+	objId := utils.VerifyId(w, id)
+	if objId != utils.EmptyId() {
+		Device, serviceStatus := services.RetrieveDevice(objId)
+		DeviceResponse := lib.IDeviceResponse{
+			Device: Device,
+		}
+		utils.WriteToClient(w, utils.BuildResponse(DeviceResponse, utils.EmptyHeaders(), serviceStatus))
 	}
-	Device, err := services.RetrieveDevice(objId)
-	DeviceResponse := lib.IDeviceResponse{
-		Device: Device,
-	}
-	lib.WriteToClient(w, lib.BuildResponse(DeviceResponse, err))
 }
 
 func GetDevicesController (w http.ResponseWriter, req *http.Request) {
-	Devices, err := services.RetrieveAllDevices()
-	DevicesReponse := lib.IDevicesResponse{Devices: Devices}
-	lib.WriteToClient(w, lib.BuildResponse(DevicesReponse, err))
+	devices, serviceStatus := services.RetrieveAllDevices()
+	DevicesResponse := lib.IDevicesResponse{Devices: devices}
+	utils.WriteToClient(w, utils.BuildResponse(DevicesResponse, utils.EmptyHeaders(), serviceStatus))
 }
 
 func PostDeviceController (w http.ResponseWriter, req *http.Request) {
-	var Device lib.IDevice
+	var devices lib.IDevice
 	bodyDevice,_ := ioutil.ReadAll(req.Body)
-	err := json.Unmarshal(bodyDevice, &Device)
+	err := json.Unmarshal(bodyDevice, &devices)
 	if err != nil {
 		panic(err)
 	}
-	Device.Resource = lib.NewResource()
-	returnId, serror := services.AddDevice(Device)
-	if serror != nil {
-		panic(serror)
+	devices.Resource = utils.NewResource()
+	returnId, serviceStatus := services.AddDevice(devices)
+	header := lib.IHeader{
+		Key:   "Location",
+		Value: "http://" + req.Host + req.RequestURI + "/" + returnId.Hex(),
 	}
-	w.Header().Add("Location", "http://" +req.Host + req.RequestURI + "/" + returnId.Hex())
-	w.WriteHeader(201)
+	utils.WriteToClient(w, utils.BuildResponse(nil, []lib.IHeader{header}, serviceStatus))
 }
 
 func DeleteDeviceController (w http.ResponseWriter, req *http.Request) {
-	id := mux.Vars(req)["id"]
-	fmt.Println("id received for put", id)
-	objId, errId := primitive.ObjectIDFromHex(id)
-	if errId != nil {
-		log.Fatal(errId)
+	id := mux.Vars(req)["deviceId"]
+	objId := utils.VerifyId(w, id)
+	if objId != utils.EmptyId() {
+		deleteId, serviceStatus := services.RemoveDevice(objId)
+		utils.WriteToClient(w, utils.BuildResponse(deleteId, utils.EmptyHeaders(), serviceStatus))
 	}
-	_, _ = services.RemoveDevice(objId)
-	w.WriteHeader(204)
+}
+func GetDeviceDataController (w http.ResponseWriter, req *http.Request) {
+	id := mux.Vars(req)["deviceId"]
+	startDateInt,_ := strconv.ParseInt(req.URL.Query().Get("startDate"), 10, 64)
+	endDateInt,_ := strconv.ParseInt(req.URL.Query().Get("endDate"), 10, 64)
+	startDate := time.Unix(startDateInt, 0)
+	endDate := time.Unix(endDateInt, 0)
+	objId := utils.VerifyId(w, id)
+	if objId != utils.EmptyId() {
+		deviceData, serviceStatus := services.RetrieveDeviceData(objId, startDate, endDate)
+		roomDataResponse := lib.IDeviceDataResponse{DeviceData: deviceData}
+		utils.WriteToClient(w, utils.BuildResponse(roomDataResponse, utils.EmptyHeaders(), serviceStatus))
+	}
 }
 
 func PutDeviceController (w http.ResponseWriter, req *http.Request) {
-	id := mux.Vars(req)["id"]
-	fmt.Println("id received for put", id)
-	objId, errId := primitive.ObjectIDFromHex(id)
-	if errId != nil {
-		log.Fatal(errId)
+	id := mux.Vars(req)["deviceId"]
+	objId := utils.VerifyId(w, id)
+	if objId != utils.EmptyId() {
+		var devices lib.IDevice
+		bodyTrack,_ := ioutil.ReadAll(req.Body)
+		err := json.Unmarshal(bodyTrack, &devices)
+		if err != nil {
+			fmt.Println("error")
+			log.Fatal(err)
+		}
+		devices.Resource.ID = objId
+		returnId, serviceStatus := services.UpdateDevice(devices)
+		header := lib.IHeader{
+			Key:   "Location",
+			Value: "http://" + req.Host + req.RequestURI + "/" + returnId.Hex(),
+		}
+		utils.WriteToClient(w, utils.BuildResponse(nil, []lib.IHeader{header}, serviceStatus))
 	}
-	var Device lib.IDevice
-	bodyTrack,_ := ioutil.ReadAll(req.Body)
-	err := json.Unmarshal(bodyTrack, &Device)
-	if err != nil {
-		fmt.Println("error")
-		log.Fatal(err)
-	}
-	Device.Resource.ID = objId
-	returnId, dbError := services.UpdateDevice(Device)
-	if dbError != nil{
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(`{"message":"`+dbError.Error()+`"}`))
-		return
-	}
-	w.WriteHeader(204)
-	w.Header().Add("Location", req.Host + req.RequestURI + "/" + returnId.Hex())
 }

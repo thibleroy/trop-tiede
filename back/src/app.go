@@ -2,8 +2,7 @@ package src
 
 import (
 	"back/lib"
-	"back/lib/db"
-	"back/lib/http"
+	"back/lib/utils"
 	"back/src/middlewares"
 	"back/src/routes"
 	"github.com/gorilla/mux"
@@ -21,9 +20,9 @@ func InitBackEnd(env lib.IEnvironment) {
 	middlewares.LoadMiddlewares(lib.Router)
 
 	// retrieves Mongo.Database instance
-	lib.MyMusicAPIDB = db.InitDB(env.MongoURL, env.MongoPort, lib.DBname)
+	lib.MyMusicAPIDB = utils.InitDB(env.MongoURL, env.MongoPort, lib.DBname)
 
 	// initializes the http server with previously created Mux router
-	http.InitWebServer(env.WebServerPort, lib.Router)
+	utils.InitWebServer(env.WebServerPort, lib.Router)
 }
 

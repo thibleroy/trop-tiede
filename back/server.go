@@ -1,11 +1,11 @@
 package main
 
 import (
-	"back/lib"
+	"back/lib/utils"
 	app "back/src"
 )
 
 func main(){
-    serverEnv := lib.GetServerEnv()
+    serverEnv := utils.GetServerEnv()
     app.InitBackEnd(serverEnv)
 }
