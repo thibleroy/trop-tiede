@@ -83,17 +83,17 @@ func main(){
 	rooms, status := services.RetrieveAllRooms()
 	fmt.Println("rooms", rooms)
 	fmt.Println("status", status)
-	// deviceId := addDevice()
-	// roomId := addRoom()
-	// fmt.Println("deviceId", deviceId)
-	// fmt.Println("roomId", roomId)
-	// addDeviceToRoom(deviceId, roomId)
+	deviceId := addDevice()
+	roomId := addRoom()
+	fmt.Println("deviceId", deviceId)
+	fmt.Println("roomId", roomId)
+	addDeviceToRoom(deviceId, roomId)
 
-	//objId, _ := primitive.ObjectIDFromHex("6071d09c43e80525657a2a29")
-	//_, status := services.RetrieveDevice(objId)
-	//if status.Code != 404 {
-	//	addDeviceData(objId)
-	//} else {
-	//	fmt.Println("Error " + strconv.Itoa(status.Code), status.Message)
-	//}
+	// objId, _ := primitive.ObjectIDFromHex("6071d09c43e80525657a2a29")
+	// _, status := services.RetrieveDevice(objId)
+	// if status.Code != 404 {
+	// 	addDeviceData(objId)
+	// } else {
+	// 	fmt.Println("Error " + strconv.Itoa(status.Code), status.Message)
+	// }
 }
