@@ -3,30 +3,32 @@
 #include <PubSubClient.h>
 #include "DHT.h" 
 //WIFI
-const char* ssid = "Livebox-8521";
-const char* password = "24021963";
+const char* ssid = "XXXXXX";
+const char* password = "*********";
 //MQTT
-#define MQTT_BROKER       "192.168.1.53"
+#define MQTT_BROKER       "192.168.0.X"
 #define MQTT_BROKER_PORT  1883
-#define MQTT_USERNAME     "thibleroy"
-#define MQTT_KEY          "thib" 
+#define MQTT_USERNAME     "XXXXXXX"
+#define MQTT_KEY          "*******" 
 WiFiMulti WiFiMulti;
 WiFiClient espClient;
 PubSubClient client(espClient);
-//DHT22 sensor
-DHT DHT_sens(32, DHT22); // datapin sensor connected to pin 10 Arduino
+//DHT11 sensor
+DHT DHT_sens(4, DHT11); // datapin sensor connected to pin 4 Arduino
 void setup() {
   Serial.begin(115200);
   setup_wifi();
   setup_mqtt();
   client.publish("/room1", "Hello from ESP32");
-  client.subscribe()
+  client.subscribe("/room1");
   DHT_sens.begin();
 }
 void loop() {
   reconnect();
   client.loop(); 
   mqtt_publish("/room1/temperature", get_temp());
+  mqtt_publish("/room1/humidity", get_humidity());
+  delay (10000);
 }
 void setup_wifi(){
   //connexion au wifi
@@ -72,17 +74,22 @@ void mqtt_publish(String topic, float t){
 
 float get_temp(){
 
-float h, t;
-h = DHT_sens.readHumidity();
-t = DHT_sens.readTemperature();
+  float t;
+  t = DHT_sens.readTemperature();
 
-delay (2000); // pause a second
-Serial.print ("Humidity: ");
-Serial.print (h,0); // zero decimal
-Serial.print (" %\t");
-Serial.print ("Temperature: ");
-Serial.print (t,1); // one decimal
-Serial.println (" *C");
-delay (2000); 
-return t;
+  Serial.print ("Temperature: ");
+  Serial.print (t,1); // one decimal
+  Serial.println (" *C");
+  return t;
+}
+
+float get_humidity(){
+
+  float h;
+  h = DHT_sens.readHumidity();
+
+  Serial.print ("Humidity: ");
+  Serial.print (h,0); // zero decimal
+  Serial.print (" %\t");
+  return h;
 }

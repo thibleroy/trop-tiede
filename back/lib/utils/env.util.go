@@ -19,7 +19,7 @@ func dotEnvVariable(key string) string {
 func GetServerEnv() lib.IEnvironment {
 	wspStr := dotEnvVariable("WEBSERVER_PORT")
 	mongoURLStr := dotEnvVariable("MONGODB_URL")
-	mongoPortStr := dotEnvVariable("MONGODB_PORT")
+	mongoNameStr := dotEnvVariable("MONGODB_NAME")
 	jwtSecretStr := dotEnvVariable("JWT_SECRET")
 	mqttURLStr := dotEnvVariable("MQTT_URL")
 	mqttPortStr := dotEnvVariable("MQTT_PORT")
@@ -30,12 +30,11 @@ func GetServerEnv() lib.IEnvironment {
 
 	var serverEnvironment lib.IEnvironment
 	wsPort, _ := strconv.Atoi(wspStr)
-	mongoPort, _ := strconv.Atoi(mongoPortStr)
 	mqttPort, _ := strconv.Atoi(mqttPortStr)
 	serverEnvironment = lib.IEnvironment{
 		WebServerPort: wsPort,
 		MongoURL:      mongoURLStr,
-		MongoPort:     mongoPort,
+		MongoName:     mongoNameStr,
 		JwtSecret:     jwtSecretStr,
 		MqttBrokerURL: mqttURLStr,
 		MqttBrokerPort: mqttPort,

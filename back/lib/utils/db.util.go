@@ -8,7 +8,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
-	"strconv"
 	"time"
 )
 
@@ -22,21 +21,20 @@ func NewResource() lib.IResource {
 }
 
 func initMongoConn(uri string) mongo.Client {
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI("mongodb://" + uri + "/"))
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
 	if err != nil {
 		log.Fatal(err)
 	}
 	return *client
 }
 
-func InitDB(url string, port int, dbName string) mongo.Database {
-	uri := url + ":" + strconv.Itoa(port)
-	client := initMongoConn(uri)
+func InitDB(url string, dbName string) mongo.Database {
+	client := initMongoConn(url)
 	ctx, c := context.WithTimeout(context.Background(), 2*time.Second)
 	defer c()
 	if client.Ping(ctx, nil) != nil {
 		log.Fatal("Error pinging mongoDB")
 	}
-	fmt.Println("connected to mongo database", uri)
+	fmt.Println("connected to mongo database", url)
 	return *client.Database(dbName)
 }

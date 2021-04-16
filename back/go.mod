@@ -12,7 +12,9 @@ require (
 	github.com/joho/godotenv v1.3.0
 	github.com/mattn/go-shellwords v1.0.11 // indirect
 	github.com/rs/cors v1.7.0
-	go.mongodb.org/mongo-driver v1.4.3
-	golang.org/x/crypto v0.0.0-20191227163750-53104e6ec876
+	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
+	github.com/xdg/stringprep v0.0.0-20180714160509-73f8eece6fdc // indirect
+	go.mongodb.org/mongo-driver v1.5.1
+	golang.org/x/crypto v0.0.0-20200302210943-78000ba7a073
 	gopkg.in/urfave/cli.v1 v1.20.0 // indirect
 )

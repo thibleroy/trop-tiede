@@ -6,8 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-var MyMusicAPIDB mongo.Database
-const DBname = "trop-tiede"
+var MyDB mongo.Database
 var Router *mux.Router
 var Environment IEnvironment
 var MqttClient mqtt.Client

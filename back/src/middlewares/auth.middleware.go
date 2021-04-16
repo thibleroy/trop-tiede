@@ -16,7 +16,7 @@ func authMiddleware(next http.Handler) http.Handler {
 		var user lib.IUser
 		var dbUser lib.IUser
 		json.NewDecoder(r.Body).Decode(&user)
-		collection:= lib.MyMusicAPIDB.Collection("user")
+		collection:= lib.MyDB.Collection("user")
 		err:=collection.FindOne(context.TODO(), bson.M{"email":user.Email}).Decode(&dbUser)
 		if err!=nil{
 			w.WriteHeader(http.StatusInternalServerError)

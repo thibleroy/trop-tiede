@@ -1,7 +1,7 @@
 #include "DHT.h"
 
 float h, t;
-DHT DHT_sens(4, DHT22); // datapin sensor connected to pin 10 Arduino
+DHT DHT_sens(4, DHT11); // datapin sensor connected to pin 10 Arduino
 
  
 
