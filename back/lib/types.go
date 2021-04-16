@@ -67,7 +67,7 @@ type IDescription struct {
 type IEnvironment struct {
 	WebServerPort int
 	MongoURL string
-	MongoPort int
+	MongoName string
 	JwtSecret string
 	MqttBrokerURL string
 	MqttBrokerPort int

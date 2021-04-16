@@ -11,9 +11,8 @@ import (
 
 func Init(){
 	lib.Environment = utils.GetServerEnv()
-	dbName := "trop-tiede"
 	// retrieves Mongo.Database instance
-	lib.MyMusicAPIDB = utils.InitDB(lib.Environment.MongoURL, lib.Environment.MongoPort, dbName)
+	lib.MyDB = utils.InitDB(lib.Environment.MongoURL, lib.Environment.MongoName)
 }
 
 func addDevice() primitive.ObjectID{
@@ -79,15 +78,16 @@ func addDeviceToRoom(deviceId primitive.ObjectID, roomId primitive.ObjectID) {
 		fmt.Println("status", status)
 }
 
-
-
 func main(){
 	Init()
-	deviceId := addDevice()
-	roomId := addRoom()
-	fmt.Println("deviceId", deviceId)
-	fmt.Println("roomId", roomId)
-	addDeviceToRoom(deviceId, roomId)
+	rooms, status := services.RetrieveAllRooms()
+	fmt.Println("rooms", rooms)
+	fmt.Println("status", status)
+	// deviceId := addDevice()
+	// roomId := addRoom()
+	// fmt.Println("deviceId", deviceId)
+	// fmt.Println("roomId", roomId)
+	// addDeviceToRoom(deviceId, roomId)
 
 	//objId, _ := primitive.ObjectIDFromHex("6071d09c43e80525657a2a29")
 	//_, status := services.RetrieveDevice(objId)

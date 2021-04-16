@@ -36,6 +36,6 @@ func main(){
 	ttmqtt.ConnectMqttClient(lib.MqttClient)
 	ttmqtt.Sub(lib.MqttClient, "#", temperatureReceivedHandler)
 	// retrieves Mongo.Database instance
-	lib.MyMusicAPIDB = utils.InitDB(lib.Environment.MongoURL)
+	lib.MyDB = utils.InitDB(lib.Environment.MongoURL, lib.Environment.MongoName)
 	select {}
 }

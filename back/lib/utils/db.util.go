@@ -4,13 +4,11 @@ import (
 	"back/lib"
 	"context"
 	"fmt"
-	"time"
-	"log"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.mongodb.org/mongo-driver/mongo/readpref"
+	"log"
+	"time"
 )
 
 func NewResource() lib.IResource {
@@ -22,26 +20,21 @@ func NewResource() lib.IResource {
 	}
 }
 
-func InitDB(url string) mongo.Database {
-	client, err := mongo.NewClient(options.Client().ApplyURI(url))
+func initMongoConn(uri string) mongo.Client {
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
 	if err != nil {
 		log.Fatal(err)
 	}
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	err = client.Connect(ctx)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer client.Disconnect(ctx)
-	err = client.Ping(ctx, readpref.Primary())
-	if err != nil {
-		log.Fatal(err)
-	}
-	databases, err := client.ListDatabaseNames(ctx, bson.M{})
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(databases)
+	return *client
+}
 
-	return *client.Database("test")
+func InitDB(url string, dbName string) mongo.Database {
+	client := initMongoConn(url)
+	ctx, c := context.WithTimeout(context.Background(), 2*time.Second)
+	defer c()
+	if client.Ping(ctx, nil) != nil {
+		log.Fatal("Error pinging mongoDB")
+	}
+	fmt.Println("connected to mongo database", url)
+	return *client.Database(dbName)
 }
