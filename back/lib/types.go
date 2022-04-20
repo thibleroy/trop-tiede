@@ -1,27 +1,31 @@
 package lib
 
 import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type IDevice struct {
-	Resource IResource
+	Resource          IResource
 	DeviceDescription IDeviceDescription
-	RoomId primitive.ObjectID
+	RoomId            primitive.ObjectID
 }
 
 type IDeviceData struct {
 	Resource    IResource
 	Temperature float64
 	Time        time.Time
-	DeviceId 	primitive.ObjectID
+	DeviceId    primitive.ObjectID
 }
 
 type IRoom struct {
-	Resource IResource
+	Resource        IResource
 	RoomDescription IRoomDescription
-	DeviceIds []primitive.ObjectID
+}
+
+type IID struct {
+	Id string
 }
 
 type IRoomDescription struct {
@@ -29,24 +33,24 @@ type IRoomDescription struct {
 }
 
 type IDeviceDescription struct {
-	Position IPosition
+	Position     IPosition
 	SerialNumber string
-	Description IDescription
+	Description  IDescription
 }
 
 type IResponse struct {
-	Status IStatus
-	Body IBody
+	Status  IStatus
+	Body    IBody
 	Headers []IHeader
 }
 
 type IBody struct {
-	Value interface{}
+	Value   interface{}
 	Message string
 }
 
 type IHeader struct {
-	Key string
+	Key   string
 	Value string
 }
 
@@ -55,26 +59,25 @@ type IDeviceDataResponse struct {
 }
 
 type IPosition struct {
-	Latitude float64
+	Latitude  float64
 	Longitude float64
 }
 
 type IDescription struct {
-	Name string
+	Name    string
 	Details string
 }
 
 type IEnvironment struct {
-	WebServerPort int
-	MongoURL string
-	MongoPort int
-	JwtSecret string
-	MqttBrokerURL string
+	WebServerPort  int
+	MongoURL       string
+	MongoPort      int
+	JwtSecret      string
+	MqttBrokerURL  string
 	MqttBrokerPort int
-	MqttClientId string
-	MqttUsername string
-	MqttPassword string
-	MqttTemperatureTopic string
+	MqttClientId   string
+	MqttUsername   string
+	MqttPassword   string
 }
 
 type IUser struct {
@@ -86,8 +89,9 @@ type IUser struct {
 }
 
 type IStatus struct {
-	Message string
-	Code    int
+	Message    string
+	Code       int
+	RawMessage string
 }
 
 type IRoomResponse struct {
@@ -95,7 +99,8 @@ type IRoomResponse struct {
 }
 
 type IRoomsResponse struct {
-	Rooms []IRoom
+	Rooms  []IRoom
+	Length int
 }
 
 type IDeviceResponse struct {
@@ -104,6 +109,7 @@ type IDeviceResponse struct {
 
 type IDevicesResponse struct {
 	Devices []IDevice
+	Length  int
 }
 
 type IUserResponse struct {
@@ -111,11 +117,12 @@ type IUserResponse struct {
 }
 
 type IUsersResponse struct {
-	Users []IUser
+	Users  []IUser
+	Length int
 }
 
 type IResource struct {
-	ID primitive.ObjectID
+	ID        primitive.ObjectID
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

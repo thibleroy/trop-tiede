@@ -5,18 +5,19 @@ import (
 	"back/lib/utils"
 	"back/src/services"
 	"fmt"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func Init(){
+func Init() {
 	lib.Environment = utils.GetServerEnv()
 	dbName := "trop-tiede"
 	// retrieves Mongo.Database instance
 	lib.MyMusicAPIDB = utils.InitDB(lib.Environment.MongoURL, lib.Environment.MongoPort, dbName)
 }
 
-func addDevice() primitive.ObjectID{
+func addDevice() primitive.ObjectID {
 	deviceToAdd := lib.IDevice{
 		DeviceDescription: lib.IDeviceDescription{
 			Position: lib.IPosition{
@@ -24,7 +25,7 @@ func addDevice() primitive.ObjectID{
 				Longitude: 22332,
 			},
 			SerialNumber: "TestSerialNumber",
-			Description:  lib.IDescription{
+			Description: lib.IDescription{
 				Name:    "Test Device name",
 				Details: "Test Device details",
 			},
@@ -40,10 +41,10 @@ func addDevice() primitive.ObjectID{
 	return id
 }
 
-func addRoom() primitive.ObjectID{
+func addRoom() primitive.ObjectID {
 	roomToAdd := lib.IRoom{
 		RoomDescription: lib.IRoomDescription{
-			Description:  lib.IDescription{
+			Description: lib.IDescription{
 				Name:    "Test Room name",
 				Details: "Test Room details",
 			},
@@ -70,24 +71,22 @@ func addDeviceData(deviceId primitive.ObjectID) {
 	fmt.Println("status", status)
 }
 
-func addDeviceToRoom(deviceId primitive.ObjectID, roomId primitive.ObjectID) {
-		room, _ := services.RetrieveRoom(roomId)
-		fmt.Println("room retrieved", room)
-		room.DeviceIds = append(room.DeviceIds, deviceId)
-		updateId, status := services.UpdateRoom(room)
-		fmt.Println("updated id", updateId)
-		fmt.Println("status", status)
+func setDeviceRoom(deviceId primitive.ObjectID, roomId primitive.ObjectID) {
+	device, _ := services.RetrieveDevice(deviceId)
+	fmt.Println("device to update", device)
+	device.RoomId = roomId
+	updateId, status := services.UpdateDevice(device)
+	fmt.Println("updated id", updateId)
+	fmt.Println("status", status)
 }
 
-
-
-func main(){
+func main() {
 	Init()
 	deviceId := addDevice()
 	roomId := addRoom()
 	fmt.Println("deviceId", deviceId)
 	fmt.Println("roomId", roomId)
-	addDeviceToRoom(deviceId, roomId)
+	setDeviceRoom(deviceId, roomId)
 
 	//objId, _ := primitive.ObjectIDFromHex("6071d09c43e80525657a2a29")
 	//_, status := services.RetrieveDevice(objId)

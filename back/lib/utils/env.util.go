@@ -2,10 +2,11 @@ package utils
 
 import (
 	"back/lib"
-	"github.com/joho/godotenv"
 	"log"
 	"os"
 	"strconv"
+
+	"github.com/joho/godotenv"
 )
 
 func dotEnvVariable(key string) string {
@@ -17,7 +18,7 @@ func dotEnvVariable(key string) string {
 }
 
 func GetServerEnv() lib.IEnvironment {
-	wspStr := dotEnvVariable("WEBSERVER_PORT")
+	wspStr := dotEnvVariable("HTTP_SERVER_PORT")
 	mongoURLStr := dotEnvVariable("MONGODB_URL")
 	mongoPortStr := dotEnvVariable("MONGODB_PORT")
 	jwtSecretStr := dotEnvVariable("JWT_SECRET")
@@ -26,23 +27,21 @@ func GetServerEnv() lib.IEnvironment {
 	mqttClientIdStr := dotEnvVariable("MQTT_CLIENTID")
 	mqttUsernameStr := dotEnvVariable("MQTT_USERNAME")
 	mqttPasswordStr := dotEnvVariable("MQTT_PASSWORD")
-	mqttTemperatureTopic := dotEnvVariable("MQTT_TEMP_TOPIC")
 
 	var serverEnvironment lib.IEnvironment
 	wsPort, _ := strconv.Atoi(wspStr)
 	mongoPort, _ := strconv.Atoi(mongoPortStr)
 	mqttPort, _ := strconv.Atoi(mqttPortStr)
 	serverEnvironment = lib.IEnvironment{
-		WebServerPort: wsPort,
-		MongoURL:      mongoURLStr,
-		MongoPort:     mongoPort,
-		JwtSecret:     jwtSecretStr,
-		MqttBrokerURL: mqttURLStr,
+		WebServerPort:  wsPort,
+		MongoURL:       mongoURLStr,
+		MongoPort:      mongoPort,
+		JwtSecret:      jwtSecretStr,
+		MqttBrokerURL:  mqttURLStr,
 		MqttBrokerPort: mqttPort,
-		MqttClientId: mqttClientIdStr,
-		MqttUsername: mqttUsernameStr,
-		MqttPassword: mqttPasswordStr,
-		MqttTemperatureTopic: mqttTemperatureTopic,
+		MqttClientId:   mqttClientIdStr,
+		MqttUsername:   mqttUsernameStr,
+		MqttPassword:   mqttPasswordStr,
 	}
 	return serverEnvironment
 }
