@@ -1,13 +1,14 @@
-import {IDevice, IDevicesResponse} from "../lib/types";
+import {IDevice} from "../lib/types";
 import {List} from "@material-ui/core";
 import Device from "./device";
 import React from "react";
 
-const TTDevices = ({Devices}:  IDevicesResponse) => {
-    console.log("devices", Devices);
-    return (<>
+const TTDevices = (devices:  IDevice[]) => {
+    console.log("devices", devices);
+    return (
+        <>
             <List>
-                {Devices.map((device: IDevice) => (
+                {devices.map((device: IDevice) => (
                         <Device key={device.Resource.ID}
                                 DeviceDescription={device.DeviceDescription}
                                 Resource={device.Resource}
@@ -16,7 +17,7 @@ const TTDevices = ({Devices}:  IDevicesResponse) => {
                     )
                 )}
             </List>
-        </>
+            </>
     );
 }
 

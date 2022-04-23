@@ -1,7 +1,7 @@
 export interface  IResource {
     ID: string;
     CreatedAt: Date;
-    UpdatedAt: Date;IData
+    UpdatedAt: Date;
 }
 
 export interface IData {
@@ -33,7 +33,6 @@ export interface IDevice {
 export interface  IRoom {
     Resource?: IResource;
     RoomDescription: IRoomDescription;
-    DeviceIds: string[];
 }
 
 export interface IRoomDescription {

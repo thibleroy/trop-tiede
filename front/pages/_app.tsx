@@ -19,6 +19,7 @@ const MyApp = ({Component, pageProps, Rooms}: TTAppProps) => {
     )
 }
 MyApp.getInitialProps = async (): Promise<IRoomsResponse> => {
+    console.log("api", process.env.NEXT_PUBLIC_API);
     const res = await fetch(process.env.NEXT_PUBLIC_API + '/rooms');
     const body: IBody = await res.json();
     return body.Value;
