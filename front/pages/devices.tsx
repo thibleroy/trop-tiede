@@ -9,7 +9,7 @@ const Devices = ({Devices}:  IDevicesResponse) => {
     console.log("devices", Devices);
     return (<div>
             <h1>Devices</h1>
-            <TTDevices Devices={Devices}/>
+            <TTDevices devices={Devices}/>
         </div>
     );
 }

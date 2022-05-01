@@ -1,29 +1,45 @@
-import loadable from "@loadable/component";
-import {IData, IDeviceData, IDeviceDatas} from "../lib/types";
-import {ApexOptions} from "apexcharts";
-const ReactApexChart = loadable(() => import('react-apexcharts'), {ssr: false});
+import { IDeviceData } from '@/lib/types';
+import {Line} from 'react-chartjs-2';
+import { ChartData, 
+    ChartDataset, 
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend } from 'chart.js';
 
-function Chart({Data}: IDeviceDatas) {
-    console.log("data in chart component", Data);
-    const chartOptions: ApexOptions = {title: {text: "Temperature"}, series: []};
-    const series: ApexAxisChartSeries = [];
-    if (Data) {
-        Data.forEach((deviceData: IDeviceData) => {
-            const _s: number[] = [];
-            deviceData.Data.forEach((data: IData) => {
-                _s.push(data.Temperature);
-                chartOptions.xaxis?.categories.push(data.Time);
+function Chart({data}: IDeviceData) {
+    ChartJS.register(
+        CategoryScale, 
+        LinearScale, 
+        PointElement,
+        LineElement,
+        Title,
+        Tooltip,
+        Legend);
+        const chartDataset: ChartDataset = {
+            type: 'line',
+            label: 'temperature',
+            data: []
+        };
+        for (let d of data) {
+            chartDataset.data.push({
+                x: d.Time,
+                y: d.Temperature
             });
-            series.push({data: _s, name: deviceData.Device.DeviceDescription.Description.Name});
-        });
+        }
+    const chartData = {
+        datasets: [chartDataset],
+        labels: data.map(data => data.Time)
     }
-    chartOptions.series = series;
-    return(
-        <div>
-            <ReactApexChart options={chartOptions} series={chartOptions.series} type="line" width={500}
-                            height={320}/>
-        </div>
-        );
+    return (
+        <>
+        <Line data={chartData} ></Line>
+        </>
+    )
 }
 
 export default Chart;

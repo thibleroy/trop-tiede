@@ -1,15 +1,21 @@
-import {Action} from "redux";
-import {TOGGLE_MENU, HIDE_MENU} from "../types/menuTypes";
+import {createReducer} from "@reduxjs/toolkit";
+import { hideMenu, showMenu, toggleMenu } from "redux/actions/menuActions";
 
-const initialMenuState = {value: false};
+interface MenuState {
+    open: boolean
+  }
 
-export const menuReducer = (state = initialMenuState, action: Action) => {
-    switch (action.type) {
-        case TOGGLE_MENU:
-            return {...state, value: !state.value};
-        case HIDE_MENU:
-            return {...state, value: false}
-        default:
-            return {...state};
-    }
-};
+const initialMenuState: MenuState = {open: false};
+
+export const menuReducer = createReducer(initialMenuState, (builder) => {
+    builder
+      .addCase(showMenu, (state, action) => {
+        state.open = true;
+      })
+      .addCase(hideMenu, (state, action) => {
+        state.open = false;
+      })
+      .addCase(toggleMenu, (state, action) => {
+        state.open = !state.open;
+      })
+  });

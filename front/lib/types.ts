@@ -1,3 +1,5 @@
+import {AppProps} from "next/app";
+
 export interface  IResource {
     ID: string;
     CreatedAt: Date;
@@ -5,19 +7,15 @@ export interface  IResource {
 }
 
 export interface IData {
-    Resource: IResource;
+    Resource?: IResource;
     Temperature: number;
-    Time: Date;
-    DeviceId: string;
+    Time: number;
+    DeviceId?: string;
 }
 
 export interface IDeviceData {
-    DeviceId: IDevice;
-    Data: IData[];
-}
-
-export interface IDeviceDatas {
-    Data: IDeviceData[];
+    device?: IDevice;
+    data: IData[];
 }
 
 export interface IDeviceDataResponse {
@@ -28,6 +26,14 @@ export interface IDevice {
     Resource: IResource;
     DeviceDescription: IDeviceDescription;
     RoomId: string;
+}
+
+export interface IDevicesProps {
+    devices: IDevice[];
+}
+
+export interface IDeviceProps {
+    device: IDevice;
 }
 
 export interface  IRoom {
@@ -61,6 +67,11 @@ export interface IResponse {
     Headers: IHeader[];
 }
 
+export interface IRoomProps {
+    room: IRoom;
+    devices: IDevice[];
+}
+
 export interface IBody {
     Value: any;
     Message: string;
@@ -81,7 +92,11 @@ export interface IRoomResponse {
 }
 
 export interface IRoomsResponse {
-    Rooms: IRoom[]
+    Rooms: IRoom[];
+}
+
+export interface IDrawerProps {
+    rooms: IRoom[]
 }
 
 export interface IDevicesResponse {
@@ -90,6 +105,10 @@ export interface IDevicesResponse {
 
 export interface IDeviceResponse {
     Device: IDevice
+}
+
+export interface IRoomProps {
+    Room: IRoom
 }
 
 export interface IError {
