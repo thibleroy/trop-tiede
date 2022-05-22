@@ -11,7 +11,8 @@ export const roomsApi = createApi({
       transformResponse: (resp: IBody) => resp.Value
     }),
     getRoom: builder.query<IRoomResponse, string>({
-      query: (id: string) => `/rooms/${id}`
+      query: (id: string) => `/room/${id}`,
+      transformResponse: (resp: IBody) => resp.Value
     })
   }),
 })

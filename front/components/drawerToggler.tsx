@@ -1,8 +1,9 @@
 import React from "react";
-import {Dispatch} from "redux";
-import {useDispatch} from "react-redux";
-import {toggleMenu} from "../redux/actions/menuActions";
-import {Button} from "@material-ui/core";
+import { Dispatch } from "redux";
+import { useDispatch } from "react-redux";
+import { toggleMenu } from "../redux/actions/menuActions";
+import { IconButton } from "@material-ui/core";
+import {Menu} from "@mui/icons-material";
 
 const DrawerToggler = () => {
     const dispatch: Dispatch = useDispatch();
@@ -11,7 +12,9 @@ const DrawerToggler = () => {
         dispatch(toggleMenu());
     }
     return (
-        <Button onClick={toggleDrawer}>Toggle Menu</Button>
+        <IconButton onClick={toggleDrawer}>
+            <Menu/>
+        </IconButton>
     )
 }
 

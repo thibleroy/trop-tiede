@@ -1,16 +1,15 @@
-import {Divider, Typography} from "@material-ui/core";
 import React from "react";
-import TTDevices from "../components/devices";
+import { useGetRoomsQuery } from "redux/middlewares/api/rooms";
+import TTRooms from "@/components/rooms";
 import TTError from "@/components/error";
 import TTLoader from "@/components/loader";
-import { useGetDevicesQuery } from "redux/middlewares/api/devices";
+import { Divider, Typography } from "@material-ui/core";
 
-const Devices = () => {
-    const { data, error, isLoading } = useGetDevicesQuery();
-
+const Rooms = () => {
+    const { data, error, isLoading } = useGetRoomsQuery();
     return (<>
         <Typography variant="h3">
-            Devices
+            Rooms
         </Typography>
 
         <Divider />
@@ -18,10 +17,10 @@ const Devices = () => {
         {error ? (<TTError error={error} />) :
             isLoading ? (<TTLoader />) :
                 data ?
-                    (<TTDevices devices={data.Devices} />)
+                    (<TTRooms rooms={data.Rooms} />)
                     : null}
     </>
     );
 }
 
-export default Devices;
+export default Rooms;

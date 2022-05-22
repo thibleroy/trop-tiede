@@ -8,7 +8,7 @@ export interface IDeviceDataParams {
         endDate: number;
     }
 }
-const Device = ({device}: IDeviceProps) => {
+const TTDevice = ({device}: IDeviceProps) => {
 
     const data: IDeviceData = {
         device,
@@ -27,4 +27,4 @@ const Device = ({device}: IDeviceProps) => {
     )
 }
 
-export default Device;
+export default TTDevice;

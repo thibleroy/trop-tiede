@@ -1,22 +1,39 @@
-import {IError} from "../lib/types";
-import {Card, CardContent, Typography} from "@material-ui/core";
+import { IErrorProps } from "@/lib/types";
+import { Card, CardContent, Typography } from "@material-ui/core";
 
-const TTError = ({Code, Message}: IError) => {
-    return (
-        <Card>
-            <CardContent>
+const TTError = ({ error }: IErrorProps) => {
+    console.log('err', error)
+
+    if ('status' in error) {
+        // you can access all properties of `FetchBaseQueryError` here
+        const errMsg = 'error' in error ? error.error : JSON.stringify(error.data)
+
+        return (
+            <>
                 <Typography variant="h4" color="textSecondary">
-                    Error {Code}
+                    Error {error.status}
                 </Typography>
                 <Typography variant="h6">
                     Message :
                     <Typography color="textSecondary">
-                        {Message}
+                        {errMsg}
                     </Typography>
                 </Typography>
-            </CardContent>
-        </Card>
-    )
+            </>
+        )
+    }
+    else {
+        // you can access all properties of `SerializedError` here
+        return (
+            <Card>
+                <CardContent>
+                    <Typography variant="h4" color="textSecondary">
+                        Error {error.message}
+                    </Typography>
+                </CardContent>
+            </Card>
+        )
+    }
 };
 
 export default TTError;

@@ -1,4 +1,5 @@
-import {AppProps} from "next/app";
+import { SerializedError } from "@reduxjs/toolkit";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
 
 export interface  IResource {
     ID: string;
@@ -30,6 +31,14 @@ export interface IDevice {
 
 export interface IDevicesProps {
     devices: IDevice[];
+}
+
+export interface IRoomsProps {
+    rooms: IRoom[];
+}
+export interface IDrawerItemProps {
+    label: string;
+    route: string;
 }
 
 export interface IDeviceProps {
@@ -69,7 +78,6 @@ export interface IResponse {
 
 export interface IRoomProps {
     room: IRoom;
-    devices: IDevice[];
 }
 
 export interface IBody {
@@ -108,12 +116,11 @@ export interface IDeviceResponse {
 }
 
 export interface IRoomProps {
-    Room: IRoom
+    room: IRoom
 }
 
-export interface IError {
-    Message: string;
-    Code:    number;
+export interface IErrorProps {
+    error: FetchBaseQueryError | SerializedError;
 }
 
 export interface  IEnvironment {

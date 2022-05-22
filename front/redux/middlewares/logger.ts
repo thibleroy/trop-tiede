@@ -6,7 +6,7 @@ const loggerMiddleware: Middleware<
 RootState
 > = store => (next: any) => (action: Action) => {
     console.log('dispatching', action)
-    let result = next(action)
+    const result = next(action)
     console.log('next state', store.getState())
     return result
   };

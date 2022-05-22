@@ -1,19 +1,16 @@
-import {IDevice, IDevicesProps} from "../lib/types";
-import {List} from "@material-ui/core";
-import Device from "./device";
+import { IDevice, IDevicesProps } from "../lib/types";
+import { List } from "@material-ui/core";
 import React from "react";
+import TTDevice from "./device";
 
-const TTDevices = ({devices}: IDevicesProps) => {
-    console.log("devices", devices);
+const TTDevices = ({ devices }: IDevicesProps) => {
     return (
-        <>
             <List>
                 {devices.map((device: IDevice) => (
-                        <Device device={device} key={device.Resource.ID}/>
-                    )
+                    <TTDevice device={device} key={device.Resource.ID} />
+                )
                 )}
             </List>
-            </>
     );
 }
 

@@ -6,6 +6,8 @@ import (
 	"back/src/services"
 	"fmt"
 	"time"
+	"math/rand"
+	"strconv"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -45,7 +47,7 @@ func addRoom() primitive.ObjectID {
 	roomToAdd := lib.IRoom{
 		RoomDescription: lib.IRoomDescription{
 			Description: lib.IDescription{
-				Name:    "Test Room name",
+				Name:    "Test Room name " + strconv.Itoa(rand.Int()),
 				Details: "Test Room details",
 			},
 		},

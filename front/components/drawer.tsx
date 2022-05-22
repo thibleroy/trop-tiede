@@ -1,98 +1,67 @@
-import {Drawer, ListItem, List, Modal} from "@material-ui/core";
+import { Drawer, List } from "@material-ui/core";
 import React from "react";
-import {useSelector, useDispatch} from 'react-redux'
-import {Dispatch} from "redux";
-import {toggleMenu, hideMenu} from "../redux/actions/menuActions";
-import {RootState} from "../redux/reducers/rootReducer";
-import {IRoom} from "../lib/types";
-import {useRouter} from "next/router";
-import HomeBtn from "../components/homeBtn";
-import {Button} from '@material-ui/core';
-import {Add} from "@material-ui/icons";
+import { useSelector, useDispatch } from 'react-redux'
+import { Dispatch } from "redux";
+import { hideMenu } from "../redux/actions/menuActions";
+import { RootState } from "../redux/reducers/rootReducer";
+import { AppBar, Toolbar, Typography } from "@material-ui/core";
 import DrawerToggler from "./drawerToggler";
-import { useGetRoomsQuery } from "redux/middlewares/api/rooms";
+import { IDrawerItemProps } from "@/lib/types";
+import TTDrawerItem from "./drawerItem";
 
 const TTDrawer = () => {
-    const router = useRouter();
     const drawerState = useSelector((state: RootState) => state.menu);
     const dispatch: Dispatch = useDispatch();
-    const { data, error, isLoading } = useGetRoomsQuery();
-
-    const clickAwayHandler = (e: React.MouseEvent<Document>) => {
-        e.preventDefault();
-        dispatch(hideMenu());
-    }
-    const navigate = async (e: React.MouseEvent<HTMLButtonElement>, id?: string) => {
-        e.preventDefault();
-        await router.push("/room/" + id);
-        dispatch(toggleMenu());
-    };
-    const [open, setOpen] = React.useState(false);
-
-    const handleOpen = () => {
-        setOpen(true);
-    };
 
     const handleClose = () => {
-        setOpen(false);
+        dispatch(hideMenu());
     };
 
-    const addRoom = async (e: React.MouseEvent<HTMLFormElement>) => {
+    const clickAwayHandler = (e: React.MouseEvent<Document>, reason: "backdropClick" | "escapeKeyDown") => {
+        console.log('reason', reason);
         e.preventDefault();
-        const room: IRoom = {
-            RoomDescription: {
-                Description: {Details: "test details", Name: "test name"}
-            }
-        };
-        const res = await fetch(
-            process.env.NEXT_PUBLIC_API + '/rooms',
-            {
-                body: JSON.stringify(room),
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                method: 'POST'
-            }
-        );
-        console.log('post create', res.headers.entries());
         handleClose();
-    };
+    }
 
-    const body = (
-        <form onSubmit={addRoom}>
-            <label htmlFor="name">Name</label>
-            <input id="name" type="text" autoComplete="name" required/>
-            <button type="submit">Register</button>
-        </form>
-    );
+    const routes: IDrawerItemProps[] =
+        [
+            {
+                label: 'Dashboard',
+                route: '/'
+            },
+            {
+                label: 'Home',
+                route: '/home',
+            },
+            {
+                label: 'Rooms',
+                route: '/rooms'
+            },
+            {
+                label: 'Devices',
+                route: '/devices'
+            }
+        ];
 
-        return (
-            <Drawer open={drawerState.open} onEscapeKeyDown={clickAwayHandler} onBackdropClick={clickAwayHandler}>
-                <DrawerToggler/>
-                <HomeBtn/>
-                <Button color="default" variant="contained" size="large" onClick={handleOpen}><Add/></Button>
-                <Modal
-                    open={open}
-                    onClose={handleClose}
-                    aria-labelledby="simple-modal-title"
-                    aria-describedby="simple-modal-description"
-                >
-                    {body}
-                </Modal>
-                {error ? (<>Error !</>): 
-                isLoading ? (<>Loading...</>): 
-                data ?          
-                (<List>
-                    {data.Rooms.map((room: IRoom) => (
-                            <ListItem key={room.Resource?.ID}>
-                                <Button
-                                    onClick={e => navigate(e, room.Resource?.ID)}>{room.RoomDescription.Description.Name}</Button>
-                            </ListItem>
-                        )
-                    )}
-                </List>)
-                : null}
+    return (
+        <>
+            <DrawerToggler />
+            <Drawer open={drawerState.open} onClose={clickAwayHandler}>
+                <AppBar position="static">
+                    <Toolbar>
+                        <DrawerToggler />
+                        <Typography variant="h4">
+                            Trop tiède
+                        </Typography>
+                    </Toolbar>
+                </AppBar>
+                <List>
+                    {routes.map((drawerItemProps: IDrawerItemProps, id: number) => (
+                        <TTDrawerItem key={id} label={drawerItemProps.label} route={drawerItemProps.route} />
+                    ))}
+                </List>
             </Drawer>
-        )
+        </>
+    )
 }
 export default TTDrawer;

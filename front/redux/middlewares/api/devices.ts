@@ -1,17 +1,17 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { IDevice, IDevicesResponse } from '@/lib/types'
+import { IBody, IDeviceResponse, IDevicesResponse } from '@/lib/types'
 
 // Define a service using a base URL and expected endpoints
 export const devicesApi = createApi({
   reducerPath: 'devicesApi',
   baseQuery: fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_API }),
   endpoints: (builder) => ({
-    getDevices: builder.query<IDevice[], string>({
+    getDevices: builder.query<IDevicesResponse, void>({
       query: () => `/devices`,
-      transformResponse: (resp: IDevicesResponse) => resp.Devices
+      transformResponse: (resp: IBody) => resp.Value
     }),
-    getDevice: builder.query<IDevice, string>({
-      query: (id) => `/devices/${id}`
+    getDevice: builder.query<IDeviceResponse, string>({
+      query: (id: string) => `/devices/${id}`
     })
   }),
 })

@@ -1,6 +1,6 @@
 import { IDeviceData } from '@/lib/types';
 import {Line} from 'react-chartjs-2';
-import { ChartData, 
+import { 
     ChartDataset, 
     Chart as ChartJS,
     CategoryScale,
