@@ -1,4 +1,4 @@
-module github.com/thibleroy/trop-tiede/backend/src/shared
+module github.com/thibleroy/trop-tiede/back/src/shared
 
 go 1.18
 
