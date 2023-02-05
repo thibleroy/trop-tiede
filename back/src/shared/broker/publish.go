@@ -7,6 +7,7 @@ import (
 	"time"
 
 	broker "github.com/rabbitmq/amqp091-go"
+	"go.uber.org/zap"
 )
 
 func Publish(connection broker.Connection, topic string, message string) error {
@@ -14,6 +15,12 @@ func Publish(connection broker.Connection, topic string, message string) error {
 	handleError(err, "Failed to retrieve a queue")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
+	logger, _ := zap.NewProduction()
+	defer logger.Sync()
+	logger.Info("Published message",
+		zap.String("topic", topic),
+		zap.String("message", message),
+	)
 	return ch.PublishWithContext(ctx,
 		"",     // exchange
 		q.Name, // routing key

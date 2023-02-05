@@ -18,12 +18,12 @@ func Connect(username string, password string) (*broker.Connection, error) {
 	brokerConfig := broker.Config{
 		SASL: []broker.Authentication{&broker.AMQPlainAuth{Username: username, Password: password}},
 	}
-	conn, err := broker.DialConfig("localhost:12345", brokerConfig)
+	conn, err := broker.DialConfig("amqp://localhost:12345/", brokerConfig)
 	handleError(err, "Failed to connect")
 	return conn, err
 }
 
-type BrokerMessageHandler func([]byte)
+type BrokerMessageHandler func(broker.Delivery)
 
 func Queue(connection *broker.Connection, topic string) (broker.Queue, *broker.Channel, error) {
 	ch, err := connection.Channel()

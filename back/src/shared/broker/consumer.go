@@ -24,7 +24,7 @@ func Consume(connection broker.Connection, topic string, handler BrokerMessageHa
 
 	go func() {
 		for d := range msgs {
-			handler(d.Body)
+			handler(d)
 		}
 	}()
 
