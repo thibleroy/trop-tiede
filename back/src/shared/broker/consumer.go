@@ -8,8 +8,8 @@ import (
 	broker "github.com/rabbitmq/amqp091-go"
 )
 
-func consume(connection broker.Connection, topic string, handler brokerMessageHandler) {
-	q, ch, err := queue(&connection, topic)
+func Consume(connection broker.Connection, topic string, handler BrokerMessageHandler) {
+	q, ch, err := Queue(&connection, topic)
 	msgs, err := ch.Consume(
 		q.Name, // queue
 		"",     // consumer

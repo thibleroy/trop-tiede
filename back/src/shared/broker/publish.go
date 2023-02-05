@@ -10,7 +10,7 @@ import (
 )
 
 func Publish(connection broker.Connection, topic string, message string) error {
-	q, ch, err := queue(&connection, topic)
+	q, ch, err := Queue(&connection, topic)
 	handleError(err, "Failed to retrieve a queue")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

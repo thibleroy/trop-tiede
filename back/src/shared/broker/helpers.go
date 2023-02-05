@@ -14,7 +14,7 @@ func handleError(err error, msg string) {
 	}
 }
 
-func connect(username string, password string) (*broker.Connection, error) {
+func Connect(username string, password string) (*broker.Connection, error) {
 	brokerConfig := broker.Config{
 		SASL: []broker.Authentication{&broker.AMQPlainAuth{Username: username, Password: password}},
 	}
@@ -23,9 +23,9 @@ func connect(username string, password string) (*broker.Connection, error) {
 	return conn, err
 }
 
-type brokerMessageHandler func([]byte)
+type BrokerMessageHandler func([]byte)
 
-func queue(connection *broker.Connection, topic string) (broker.Queue, *broker.Channel, error) {
+func Queue(connection *broker.Connection, topic string) (broker.Queue, *broker.Channel, error) {
 	ch, err := connection.Channel()
 	q, err := ch.QueueDeclare(
 		topic, // name
