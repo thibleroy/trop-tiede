@@ -8,22 +8,34 @@ import (
 	broker "github.com/rabbitmq/amqp091-go"
 )
 
+type BrokerMessageHandler func(broker.Delivery)
+
+type BrokerClientOptions struct {
+	url      string
+	port     string
+	username string
+	password string
+}
+
+func formatBrokerURL(broker_client_options BrokerClientOptions) string {
+	return "amqp://" + broker_client_options.url + ":" + broker_client_options.port + "/"
+}
+
 func handleError(err error, msg string) {
 	if err != nil {
 		log.Printf("%s: %s", msg, err)
 	}
 }
 
-func Connect(url string, username string, password string) (*broker.Connection, error) {
+func Connect(client_options BrokerClientOptions) (*broker.Connection, error) {
+
 	brokerConfig := broker.Config{
-		SASL: []broker.Authentication{&broker.AMQPlainAuth{Username: username, Password: password}},
+		SASL: []broker.Authentication{&broker.AMQPlainAuth{Username: client_options.username, Password: client_options.password}},
 	}
-	conn, err := broker.DialConfig(url, brokerConfig)
+	conn, err := broker.DialConfig(formatBrokerURL(client_options), brokerConfig)
 	handleError(err, "Failed to connect")
 	return conn, err
 }
-
-type BrokerMessageHandler func(broker.Delivery)
 
 func Queue(connection *broker.Connection, topic string) (broker.Queue, *broker.Channel, error) {
 	ch, err := connection.Channel()
