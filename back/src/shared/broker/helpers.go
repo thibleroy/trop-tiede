@@ -11,14 +11,14 @@ import (
 type BrokerMessageHandler func(broker.Delivery)
 
 type BrokerClientOptions struct {
-	url      string
-	port     string
-	username string
-	password string
+	BrokerUrl      string
+	BrokerPort     string
+	BrokerUsername string
+	BrokerPassword string
 }
 
 func formatBrokerURL(broker_client_options BrokerClientOptions) string {
-	return "amqp://" + broker_client_options.url + ":" + broker_client_options.port + "/"
+	return "amqp://" + broker_client_options.BrokerUrl + ":" + broker_client_options.BrokerPort + "/"
 }
 
 func handleError(err error, msg string) {
@@ -30,7 +30,7 @@ func handleError(err error, msg string) {
 func Connect(client_options BrokerClientOptions) (*broker.Connection, error) {
 
 	brokerConfig := broker.Config{
-		SASL: []broker.Authentication{&broker.AMQPlainAuth{Username: client_options.username, Password: client_options.password}},
+		SASL: []broker.Authentication{&broker.AMQPlainAuth{Username: client_options.BrokerUsername, Password: client_options.BrokerPassword}},
 	}
 	conn, err := broker.DialConfig(formatBrokerURL(client_options), brokerConfig)
 	handleError(err, "Failed to connect")
