@@ -14,11 +14,11 @@ func handleError(err error, msg string) {
 	}
 }
 
-func Connect(username string, password string) (*broker.Connection, error) {
+func Connect(url string, username string, password string) (*broker.Connection, error) {
 	brokerConfig := broker.Config{
 		SASL: []broker.Authentication{&broker.AMQPlainAuth{Username: username, Password: password}},
 	}
-	conn, err := broker.DialConfig("amqp://localhost:12345/", brokerConfig)
+	conn, err := broker.DialConfig(url, brokerConfig)
 	handleError(err, "Failed to connect")
 	return conn, err
 }
