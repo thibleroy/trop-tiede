@@ -10,7 +10,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func Publish(connection broker.Connection, topic string, message string) error {
+func Publish(connection broker.Connection, topic string, message string, cid string) error {
 	q, ch, err := Queue(&connection, topic)
 	handleError(err, "Failed to retrieve a queue")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -27,7 +27,8 @@ func Publish(connection broker.Connection, topic string, message string) error {
 		false,  // mandatory
 		false,  // immediate
 		broker.Publishing{
-			ContentType: "text/plain",
-			Body:        []byte(message),
+			ContentType:   "text/plain",
+			Body:          []byte(message),
+			CorrelationId: cid,
 		})
 }
