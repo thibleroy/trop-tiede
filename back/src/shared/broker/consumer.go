@@ -20,7 +20,6 @@ func Consume(connection broker.Connection, topic string, handler BrokerMessageHa
 		nil,    // args
 	)
 	handleError(err, "Failed to register a consumer")
-	var forever chan struct{}
 
 	go func() {
 		for d := range msgs {
@@ -29,5 +28,5 @@ func Consume(connection broker.Connection, topic string, handler BrokerMessageHa
 	}()
 
 	log.Printf(" [*] Waiting for messages. To exit press CTRL+C")
-	<-forever
+
 }
