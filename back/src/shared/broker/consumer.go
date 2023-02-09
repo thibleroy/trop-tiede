@@ -50,7 +50,7 @@ func ConsumeRPC(connection broker.Connection, topic string, correlation_id strin
 		for d := range msgs {
 			if d.CorrelationId == correlation_id {
 				res = string(d.Body)
-				break
+				return
 			}
 		}
 	}()
