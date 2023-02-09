@@ -1,29 +1,52 @@
 package main
 
 import (
+	"errors"
 	"fmt"
+	"math/rand"
 	"net/http"
 
-	"github.com/rabbitmq/amqp091-go"
+	rabbitmq "github.com/rabbitmq/amqp091-go"
 	"github.com/thibleroy/trop-tiede/back/src/shared/broker"
 )
 
-var brokerConn *amqp091.Connection
+var brokerConn *rabbitmq.Connection
 
-func index(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "<h1>Hello World</h1>")
-	broker.Publish(*brokerConn, "testaa", "received index")
+func deviceHandler(w http.ResponseWriter, r *http.Request) {
+	corrId := randomString(32)
+	broker.PublishRPCRequest(*brokerConn, "device_rpc", "received ping from http-gateway", corrId)
+	res := broker.ConsumeRPC(*brokerConn, "device_rpc", corrId)
+
+	fmt.Fprintln(w, res)
 }
-
-func check(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "<h1>Health check</h1>")
-	broker.Publish(*brokerConn, "testaa", "received health_check")
+func randInt(min int, max int) int {
+	return min + rand.Intn(max-min)
+}
+func randomString(l int) string {
+	bytes := make([]byte, l)
+	for i := 0; i < l; i++ {
+		bytes[i] = byte(randInt(65, 90))
+	}
+	return string(bytes)
 }
 
 func main() {
-	brokerConn, _ = broker.Connect("default_user_UrXVpvKrxFg-4KXGxAq", "ZKlaA4FqTUZP2_T1oTWrMWZw0SeQfSRG")
-	http.HandleFunc("/", index)
-	http.HandleFunc("/health_check", check)
+	//username: default_user_UrXVpvKrxFg-4KXGxAq
+	//password: ZKlaA4FqTUZP2_T1oTWrMWZw0SeQfSRG
+	//BrokerUrl:      "host.docker.internal",
+	broker_options := broker.BrokerClientOptions{
+		BrokerUrl:      "localhost",
+		BrokerPort:     "12345",
+		BrokerUsername: "default_user_UrXVpvKrxFg-4KXGxAq",
+		BrokerPassword: "ZKlaA4FqTUZP2_T1oTWrMWZw0SeQfSRG",
+	}
+	brokerConn, _ = broker.Connect(broker_options)
+	http.HandleFunc("/device", deviceHandler)
 	fmt.Println("Server starting...")
-	http.ListenAndServe(":3000", nil)
+	err := http.ListenAndServe(":3000", nil)
+	if errors.Is(err, http.ErrServerClosed) {
+		fmt.Printf("server closed\n")
+	} else if err != nil {
+		fmt.Printf("error starting server: %s\n", err)
+	}
 }
