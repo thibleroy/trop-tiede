@@ -32,7 +32,7 @@ func Publish(connection broker.Connection, topic string, message string) error {
 		})
 }
 
-func PublishRPCResponse(connection broker.Connection, topic string, message string, delivery broker.Delivery) error {
+func PublishRPCResponse(connection broker.Connection, topic string, message string, delivery broker.Delivery) {
 	_, ch, err := Queue(&connection, topic)
 	handleError(err, "Failed to retrieve a queue")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -43,7 +43,7 @@ func PublishRPCResponse(connection broker.Connection, topic string, message stri
 		zap.String("topic", topic),
 		zap.String("message", message),
 	)
-	return ch.PublishWithContext(ctx,
+	ch.PublishWithContext(ctx,
 		"",               // exchange
 		delivery.ReplyTo, // routing key
 		false,            // mandatory
@@ -53,6 +53,8 @@ func PublishRPCResponse(connection broker.Connection, topic string, message stri
 			Body:          []byte(message),
 			CorrelationId: delivery.CorrelationId,
 		})
+	handleError(err, "Failed to publish a message")
+	delivery.Ack(false)
 }
 
 func PublishRPCRequest(connection broker.Connection, topic string, message string, correlation_id string) error {
