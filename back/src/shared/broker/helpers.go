@@ -9,7 +9,6 @@ import (
 )
 
 type BrokerMessageHandler func(broker.Delivery)
-type BrokerRPCMessageHandler func(broker.Delivery, string)
 
 type BrokerClientOptions struct {
 	BrokerUrl      string
@@ -29,7 +28,6 @@ func handleError(err error, msg string) {
 }
 
 func Connect(client_options BrokerClientOptions) (*broker.Connection, error) {
-
 	brokerConfig := broker.Config{
 		SASL: []broker.Authentication{&broker.AMQPlainAuth{Username: client_options.BrokerUsername, Password: client_options.BrokerPassword}},
 	}
@@ -40,6 +38,7 @@ func Connect(client_options BrokerClientOptions) (*broker.Connection, error) {
 
 func Queue(connection *broker.Connection, topic string) (broker.Queue, *broker.Channel, error) {
 	ch, err := connection.Channel()
+	handleError(err, "Failed to connect")
 	q, err := ch.QueueDeclare(
 		topic, // name
 		false, // durable
