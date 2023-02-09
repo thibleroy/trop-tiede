@@ -66,7 +66,7 @@ func PublishRPCRequest(connection broker.Connection, topic string, message strin
 		zap.String("topic", topic),
 		zap.String("message", message),
 	)
-	return ch.PublishWithContext(ctx,
+	err = ch.PublishWithContext(ctx,
 		"",    // exchange
 		topic, // routing key
 		false, // mandatory
@@ -77,4 +77,6 @@ func PublishRPCRequest(connection broker.Connection, topic string, message strin
 			CorrelationId: correlation_id,
 			ReplyTo:       q.Name,
 		})
+	handleError(err, "Failed to publish")
+	return err
 }

@@ -46,14 +46,13 @@ func ConsumeRPC(connection broker.Connection, topic string, correlation_id strin
 	)
 	handleError(err, "Failed to register a consumer")
 	log.Printf("Topic is " + topic + ". Waiting for messages.")
-
-	for d := range msgs {
-		if d.CorrelationId == correlation_id {
-			res = string(d.Body)
-			handleError(err, "Failed to convert body to integer")
-			break
+	go func() {
+		for d := range msgs {
+			if d.CorrelationId == correlation_id {
+				res = string(d.Body)
+				break
+			}
 		}
-	}
-
-	return res
+	}()
+	return
 }
