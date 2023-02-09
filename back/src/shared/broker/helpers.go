@@ -4,11 +4,13 @@ package broker
 //password: ZKlaA4FqTUZP2_T1oTWrMWZw0SeQfSRG
 import (
 	"log"
+	"net/http"
 
 	broker "github.com/rabbitmq/amqp091-go"
 )
 
 type BrokerMessageHandler func(broker.Delivery)
+type BrokerRPCMessageHandler func(broker.Delivery, http.ResponseWriter)
 
 type BrokerClientOptions struct {
 	BrokerUrl      string
