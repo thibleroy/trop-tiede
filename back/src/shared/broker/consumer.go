@@ -4,7 +4,6 @@ package broker
 //password: ZKlaA4FqTUZP2_T1oTWrMWZw0SeQfSRG
 import (
 	"log"
-	"net/http"
 
 	broker "github.com/rabbitmq/amqp091-go"
 )
@@ -33,7 +32,7 @@ func Consume(connection broker.Connection, topic string, handler BrokerMessageHa
 
 }
 
-func ConsumeRPC(connection broker.Connection, topic string, handler BrokerRPCMessageHandler, correlation_id string, w http.ResponseWriter) {
+func ConsumeRPC(connection broker.Connection, topic string, correlation_id string) (res string) {
 	q, ch, err := Queue(&connection, topic)
 	handleError(err, "Failed to register a queue")
 	msgs, err := ch.Consume(
@@ -46,14 +45,15 @@ func ConsumeRPC(connection broker.Connection, topic string, handler BrokerRPCMes
 		nil,    // args
 	)
 	handleError(err, "Failed to register a consumer")
-
-	go func() {
-		for d := range msgs {
-			if d.CorrelationId == correlation_id {
-				handler(d, w)
-			}
-		}
-	}()
-
 	log.Printf("Topic is " + topic + ". Waiting for messages.")
+
+	for d := range msgs {
+		if d.CorrelationId == correlation_id {
+			res = string(d.Body)
+			handleError(err, "Failed to convert body to integer")
+			break
+		}
+	}
+
+	return res
 }
