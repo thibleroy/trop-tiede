@@ -10,6 +10,7 @@ import (
 
 func Consume(connection broker.Connection, topic string, handler BrokerMessageHandler) {
 	q, ch, err := Queue(&connection, topic)
+	handleError(err, "Failed to register a queue")
 	msgs, err := ch.Consume(
 		q.Name, // queue
 		"",     // consumer
@@ -24,6 +25,30 @@ func Consume(connection broker.Connection, topic string, handler BrokerMessageHa
 	go func() {
 		for d := range msgs {
 			handler(d)
+		}
+	}()
+
+	log.Printf(" [*] Waiting for messages. To exit press CTRL+C")
+
+}
+
+func ConsumeRPC(connection broker.Connection, topic string, handler BrokerRPCMessageHandler, correlation_id string) {
+	q, ch, err := Queue(&connection, topic)
+	handleError(err, "Failed to register a queue")
+	msgs, err := ch.Consume(
+		q.Name, // queue
+		"",     // consumer
+		true,   // auto-ack
+		false,  // exclusive
+		false,  // no-local
+		false,  // no-wait
+		nil,    // args
+	)
+	handleError(err, "Failed to register a consumer")
+
+	go func() {
+		for d := range msgs {
+			handler(d, correlation_id)
 		}
 	}()
 

@@ -9,6 +9,7 @@ import (
 )
 
 type BrokerMessageHandler func(broker.Delivery)
+type BrokerRPCMessageHandler func(broker.Delivery, string)
 
 type BrokerClientOptions struct {
 	BrokerUrl      string
