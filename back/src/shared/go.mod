@@ -3,6 +3,7 @@ module github.com/thibleroy/trop-tiede/back/src/shared
 go 1.18
 
 require (
+	github.com/joho/godotenv v1.5.1
 	github.com/rabbitmq/amqp091-go v1.6.1
 	go.mongodb.org/mongo-driver v1.11.1
 	go.uber.org/zap v1.24.0
