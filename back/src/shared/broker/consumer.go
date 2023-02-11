@@ -35,6 +35,7 @@ func Consume(connection broker.Connection, topic string, handler BrokerMessageHa
 func ConsumeRPC(connection broker.Connection, topic string, correlation_id string) (res string) {
 	q, ch, err := Queue(&connection, topic)
 	handleError(err, "Failed to register a queue")
+	defer ch.Close()
 	msgs, err := ch.Consume(
 		q.Name, // queue
 		"",     // consumer
@@ -45,14 +46,14 @@ func ConsumeRPC(connection broker.Connection, topic string, correlation_id strin
 		nil,    // args
 	)
 	handleError(err, "Failed to register a consumer")
-	log.Printf("Topic is " + topic + ". Waiting for messages.")
+	log.Printf("RPC | Topic is " + topic + ". Waiting for messages.")
 
 	for d := range msgs {
 		if d.CorrelationId == correlation_id {
 			res = string(d.Body)
 			log.Printf("msg received" + res)
-			return
+			break
 		}
 	}
-	return
+	return res
 }
