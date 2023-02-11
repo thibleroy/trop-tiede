@@ -8,8 +8,10 @@ import (
 )
 
 type IEnvironment struct {
-	RabbitMQBrokerUrl  string
-	RabbitMQBrokerPort string
+	RabbitMQBrokerUrl      string
+	RabbitMQBrokerPort     string
+	RabbitMQBrokerUsername string
+	RabbitMQBrokerPassword string
 }
 
 func dotEnvVariable(key string) string {
@@ -22,7 +24,9 @@ func dotEnvVariable(key string) string {
 
 func GetServerEnv() IEnvironment {
 	return IEnvironment{
-		RabbitMQBrokerUrl:  dotEnvVariable("RABBITMQ_BROKER_URL"),
-		RabbitMQBrokerPort: dotEnvVariable("RABBITMQ_BROKER_PORT"),
+		RabbitMQBrokerUrl:      dotEnvVariable("RABBITMQ_BROKER_URL"),
+		RabbitMQBrokerPort:     dotEnvVariable("RABBITMQ_BROKER_PORT"),
+		RabbitMQBrokerUsername: dotEnvVariable("RABBITMQ_BROKER_USERNAME"),
+		RabbitMQBrokerPassword: dotEnvVariable("RABBITMQ_BROKER_PASSWORD"),
 	}
 }
