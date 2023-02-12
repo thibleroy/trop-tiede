@@ -5,7 +5,7 @@ import (
 
 	rabbitmq "github.com/rabbitmq/amqp091-go"
 	"github.com/thibleroy/trop-tiede/back/src/shared/broker"
-	"go.uber.org/zap"
+	"github.com/thibleroy/trop-tiede/back/src/shared/env"
 )
 
 var brokerConn *rabbitmq.Connection
@@ -15,38 +15,19 @@ type Device struct {
 	Label string
 }
 
-func handleRPCRequest(delivery rabbitmq.Delivery) {
-	logger, _ := zap.NewProduction()
-	defer logger.Sync()
-	logger.Info("Received message",
-		// Structured context as strongly typed Field values.
-		zap.String("topic", delivery.RoutingKey),
-		zap.String("message", string(delivery.Body)),
-	)
-	device := Device{
-		Id:    "azv12gb12jdbkcpn",
-		Label: "device label",
-	}
-	deviceStr, err := json.Marshal(device)
-	if err != nil {
-		logger.Error("Error marshall", zap.Error(err))
-	}
-	broker.PublishRPCResponse(*brokerConn, delivery.RoutingKey, string(deviceStr), delivery)
-}
-
 func main() {
+	env := env.GetServerEnv()
 	//username: default_user_UrXVpvKrxFg-4KXGxAq
 	//password: ZKlaA4FqTUZP2_T1oTWrMWZw0SeQfSRG
 	//BrokerUrl:      "host.docker.internal",
 	client_options := broker.BrokerClientOptions{
-		BrokerUrl:      "localhost",
-		BrokerPort:     "12345",
-		BrokerUsername: "default_user_UrXVpvKrxFg-4KXGxAq",
-		BrokerPassword: "ZKlaA4FqTUZP2_T1oTWrMWZw0SeQfSRG",
+		BrokerUrl:      env.RabbitMQBrokerUrl,
+		BrokerPort:     env.RabbitMQBrokerPort,
+		BrokerUsername: env.RabbitMQBrokerUsername,
+		BrokerPassword: env.RabbitMQBrokerPassword,
 	}
 	brokerConn, _ = broker.Connect(client_options)
-	var forever chan struct{}
-	//broker.Consume(*brokerConn, "device", testMessageHandlerC)
-	broker.Consume(*brokerConn, "device_rpc", handleRPCRequest)
-	<-forever
+	device := Device{Id: "123", Label: "hello !"}
+	deviceStr, _ := json.Marshal(device)
+	broker.ServeRPC(*brokerConn, "device_rpc", string(deviceStr))
 }

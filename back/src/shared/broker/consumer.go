@@ -6,35 +6,12 @@ import (
 	"log"
 
 	broker "github.com/rabbitmq/amqp091-go"
+	"github.com/thibleroy/trop-tiede/back/src/shared/utils"
 )
 
 func Consume(connection broker.Connection, topic string, handler BrokerMessageHandler) {
 	q, ch, err := Queue(&connection, topic)
-	handleError(err, "Failed to register a queue")
-	msgs, err := ch.Consume(
-		q.Name, // queue
-		"",     // consumer
-		true,   // auto-ack
-		false,  // exclusive
-		false,  // no-local
-		false,  // no-wait
-		nil,    // args
-	)
-	handleError(err, "Failed to register a consumer")
-
-	go func() {
-		for d := range msgs {
-			handler(d)
-		}
-	}()
-
-	log.Printf("Topic is " + topic + ". Waiting for messages.")
-
-}
-
-func ConsumeRPC(connection broker.Connection, topic string, correlation_id string) (res string) {
-	q, ch, err := Queue(&connection, topic)
-	handleError(err, "Failed to register a queue")
+	utils.HandleError(err, "Failed to register a queue")
 	defer ch.Close()
 	msgs, err := ch.Consume(
 		q.Name, // queue
@@ -45,15 +22,14 @@ func ConsumeRPC(connection broker.Connection, topic string, correlation_id strin
 		false,  // no-wait
 		nil,    // args
 	)
-	handleError(err, "Failed to register a consumer")
-	log.Printf("RPC | Topic is " + topic + ". Waiting for messages.")
+	utils.HandleError(err, "Failed to register a consumer")
 
-	for d := range msgs {
-		if d.CorrelationId == correlation_id {
-			res = string(d.Body)
-			log.Printf("msg received" + res)
-			break
+	go func() {
+		for d := range msgs {
+			handler(d)
 		}
-	}
-	return res
+	}()
+
+	log.Printf("Topic is " + topic + ". Waiting for messages.")
+
 }

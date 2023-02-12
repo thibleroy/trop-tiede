@@ -7,12 +7,13 @@ import (
 	"time"
 
 	broker "github.com/rabbitmq/amqp091-go"
+	"github.com/thibleroy/trop-tiede/back/src/shared/utils"
 	"go.uber.org/zap"
 )
 
 func Publish(connection broker.Connection, topic string, message string) error {
 	q, ch, err := Queue(&connection, topic)
-	handleError(err, "Failed to retrieve a queue")
+	utils.HandleError(err, "Failed to retrieve a queue")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	logger, _ := zap.NewProduction()
@@ -30,55 +31,4 @@ func Publish(connection broker.Connection, topic string, message string) error {
 			ContentType: "text/plain",
 			Body:        []byte(message),
 		})
-}
-
-func PublishRPCResponse(connection broker.Connection, topic string, message string, delivery broker.Delivery) {
-	_, ch, err := Queue(&connection, topic)
-	handleError(err, "Failed to retrieve a queue")
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	logger, _ := zap.NewProduction()
-	defer logger.Sync()
-	logger.Info("Published message",
-		zap.String("topic", topic),
-		zap.String("message", message),
-	)
-	ch.PublishWithContext(ctx,
-		"",               // exchange
-		delivery.ReplyTo, // routing key
-		false,            // mandatory
-		false,            // immediate
-		broker.Publishing{
-			ContentType:   "text/plain",
-			Body:          []byte(message),
-			CorrelationId: delivery.CorrelationId,
-		})
-	handleError(err, "Failed to publish a message")
-	delivery.Ack(false)
-}
-
-func PublishRPCRequest(connection broker.Connection, topic string, message string, correlation_id string) error {
-	q, ch, err := Queue(&connection, topic)
-	handleError(err, "Failed to retrieve a queue")
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	logger, _ := zap.NewProduction()
-	defer logger.Sync()
-	logger.Info("Published message",
-		zap.String("topic", topic),
-		zap.String("message", message),
-	)
-	err = ch.PublishWithContext(ctx,
-		"",    // exchange
-		topic, // routing key
-		false, // mandatory
-		false, // immediate
-		broker.Publishing{
-			ContentType:   "text/plain",
-			Body:          []byte(message),
-			CorrelationId: correlation_id,
-			ReplyTo:       q.Name,
-		})
-	handleError(err, "Failed to publish")
-	return err
 }

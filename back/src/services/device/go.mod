@@ -2,9 +2,11 @@ module device
 
 go 1.18
 
+require github.com/thibleroy/trop-tiede/back/src/shared v0.0.0-20230211123956-76e01002f603
+
 require (
-	github.com/thibleroy/trop-tiede/back/src/shared v0.0.0-20230209013437-ee83f0eb1dce
-	go.uber.org/zap v1.24.0
+	github.com/joho/godotenv v1.5.1 // indirect
+	go.uber.org/zap v1.24.0 // indirect
 )
 
 require (
