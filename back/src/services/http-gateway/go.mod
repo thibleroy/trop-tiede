@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/rabbitmq/amqp091-go v1.6.1
-	github.com/thibleroy/trop-tiede/back/src/shared v0.0.0-20230211123956-76e01002f603
+	github.com/thibleroy/trop-tiede/back/src/shared v0.0.0-20230212192227-6b60a2704313
 )
 
 require (
