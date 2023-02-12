@@ -2,7 +2,7 @@ module device
 
 go 1.18
 
-require github.com/thibleroy/trop-tiede/back/src/shared v0.0.0-20230212192227-6b60a2704313
+require github.com/thibleroy/trop-tiede/back/src/shared v0.0.0-20230212203430-1f01634b56f3
 
 require (
 	github.com/joho/godotenv v1.5.1 // indirect
