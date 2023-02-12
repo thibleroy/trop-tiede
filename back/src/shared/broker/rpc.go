@@ -61,11 +61,31 @@ func RPC(conn amqp091.Connection, message string, rpc_queue_name string, rpc_cb_
 			break
 		}
 	}
-
 	return
 }
 
-func ServeRPC(conn amqp091.Connection, rpc_queue_name string, message string) {
+type RPCRequestHandler func(amqp091.Delivery, context.Context) error
+
+func PublishRPCResponse(conn amqp091.Connection, d amqp091.Delivery, message string, ctx context.Context) {
+	ch, err := conn.Channel()
+	utils.HandleError(err, "Failed to open a channel")
+	defer ch.Close()
+	ch.PublishWithContext(ctx,
+		"",        // exchange
+		d.ReplyTo, // routing key
+		false,     // mandatory
+		false,     // immediate
+		amqp091.Publishing{
+			ContentType:   "text/plain",
+			CorrelationId: d.CorrelationId,
+			Body:          []byte(message),
+		})
+	utils.HandleError(err, "Failed to publish a message")
+	fmt.Println("Sent RPC response", message)
+	d.Ack(false)
+}
+
+func ServeRPC(conn amqp091.Connection, rpc_queue_name string, handler RPCRequestHandler) {
 	ch, err := conn.Channel()
 	utils.HandleError(err, "Failed to open a channel")
 	defer ch.Close()
@@ -104,20 +124,9 @@ func ServeRPC(conn amqp091.Connection, rpc_queue_name string, message string) {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 		for d := range msgs {
-			fmt.Println("Received RPC request", string(d.Body))
-			err = ch.PublishWithContext(ctx,
-				"",        // exchange
-				d.ReplyTo, // routing key
-				false,     // mandatory
-				false,     // immediate
-				amqp091.Publishing{
-					ContentType:   "text/plain",
-					CorrelationId: d.CorrelationId,
-					Body:          []byte(message),
-				})
-			utils.HandleError(err, "Failed to publish a message")
-			fmt.Println("Sent RPC response", message)
-			d.Ack(false)
+			fmt.Println("Received RPC request, body is", string(d.Body))
+			err := handler(d, ctx)
+			utils.HandleError(err, "Error handling RPC request")
 		}
 	}()
 

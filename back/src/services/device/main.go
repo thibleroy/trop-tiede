@@ -1,7 +1,9 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
+	"time"
 
 	rabbitmq "github.com/rabbitmq/amqp091-go"
 	"github.com/thibleroy/trop-tiede/back/src/shared/broker"
@@ -13,6 +15,15 @@ var brokerConn *rabbitmq.Connection
 type Device struct {
 	Id    string
 	Label string
+}
+
+func handleDeviceRPCRequest(delivery rabbitmq.Delivery, ctx context.Context) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	device := Device{Id: "123", Label: "hello !"}
+	deviceStr, err := json.Marshal(device)
+	broker.PublishRPCResponse(*brokerConn, delivery, string(deviceStr), ctx)
+	return err
 }
 
 func main() {
@@ -27,7 +38,6 @@ func main() {
 		BrokerPassword: env.RabbitMQBrokerPassword,
 	}
 	brokerConn, _ = broker.Connect(client_options)
-	device := Device{Id: "123", Label: "hello !"}
-	deviceStr, _ := json.Marshal(device)
-	broker.ServeRPC(*brokerConn, "device_rpc", string(deviceStr))
+
+	broker.ServeRPC(*brokerConn, "device_rpc", handleDeviceRPCRequest)
 }
