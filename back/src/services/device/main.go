@@ -18,8 +18,6 @@ type Device struct {
 }
 
 func handleDeviceRPCRequest(delivery rabbitmq.Delivery, ctx context.Context) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
 	device := Device{Id: "123", Label: "hello !"}
 	deviceStr, err := json.Marshal(device)
 	broker.PublishRPCResponse(*brokerConn, delivery, string(deviceStr), ctx)
@@ -28,9 +26,6 @@ func handleDeviceRPCRequest(delivery rabbitmq.Delivery, ctx context.Context) err
 
 func main() {
 	env := env.GetServerEnv()
-	//username: default_user_UrXVpvKrxFg-4KXGxAq
-	//password: ZKlaA4FqTUZP2_T1oTWrMWZw0SeQfSRG
-	//BrokerUrl:      "host.docker.internal",
 	client_options := broker.BrokerClientOptions{
 		BrokerUrl:      env.RabbitMQBrokerUrl,
 		BrokerPort:     env.RabbitMQBrokerPort,
@@ -38,6 +33,7 @@ func main() {
 		BrokerPassword: env.RabbitMQBrokerPassword,
 	}
 	brokerConn, _ = broker.Connect(client_options)
-
-	broker.ServeRPC(*brokerConn, "device_rpc", handleDeviceRPCRequest)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	broker.ServeRPC(*brokerConn, "device_rpc", ctx, handleDeviceRPCRequest)
 }

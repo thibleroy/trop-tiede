@@ -85,7 +85,7 @@ func PublishRPCResponse(conn amqp091.Connection, d amqp091.Delivery, message str
 	d.Ack(false)
 }
 
-func ServeRPC(conn amqp091.Connection, rpc_queue_name string, handler RPCRequestHandler) {
+func ServeRPC(conn amqp091.Connection, rpc_queue_name string, ctx context.Context, handler RPCRequestHandler) {
 	ch, err := conn.Channel()
 	utils.HandleError(err, "Failed to open a channel")
 	defer ch.Close()
@@ -121,8 +121,6 @@ func ServeRPC(conn amqp091.Connection, rpc_queue_name string, handler RPCRequest
 	var forever chan struct{}
 
 	go func() {
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
 		for d := range msgs {
 			fmt.Println("Received RPC request, body is", string(d.Body))
 			err := handler(d, ctx)
