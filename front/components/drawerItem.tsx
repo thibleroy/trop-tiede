@@ -21,8 +21,8 @@ const TTDrawerItem = (drawerItemParam: IDrawerItemProps) => {
     }
 
     return (
-        <ListItem>
-            <Button onClick={e => navigate(e, drawerItemParam.route)}>
+        <ListItem className="drawerItem">
+            <Button className="drawerItem" onClick={e => navigate(e, drawerItemParam.route)}>
                 <Typography variant="h6">
                 {drawerItemParam.label}
                 </Typography>

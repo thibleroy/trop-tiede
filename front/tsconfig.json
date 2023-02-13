@@ -19,12 +19,23 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "paths": {
-        "@/store": ["redux/store"],
-        "@/components/*": ["components/*"],
-        "@/lib/*": ["lib/*"],
-        "@/pages/*": ["pages/*"],
-        "@/public/*": ["public/*"]
-    }
+      "@/store": [
+        "redux/store"
+      ],
+      "@/components/*": [
+        "components/*"
+      ],
+      "@/lib/*": [
+        "lib/*"
+      ],
+      "@/pages/*": [
+        "pages/*"
+      ],
+      "@/public/*": [
+        "public/*"
+      ]
+    },
+    "incremental": true
   },
   "include": [
     "next-env.d.ts",

@@ -30,10 +30,6 @@ const TTDrawer = () => {
                 route: '/'
             },
             {
-                label: 'Home',
-                route: '/home',
-            },
-            {
                 label: 'Rooms',
                 route: '/rooms'
             },
@@ -46,16 +42,16 @@ const TTDrawer = () => {
     return (
         <>
             <DrawerToggler />
-            <Drawer open={drawerState.open} onClose={clickAwayHandler}>
+            <Drawer open={drawerState.open} onClose={clickAwayHandler} className="TTDrawer">
                 <AppBar position="static">
-                    <Toolbar>
+                    <Toolbar className="TTToolbar">
                         <DrawerToggler />
                         <Typography variant="h4">
                             Trop tiède
                         </Typography>
                     </Toolbar>
                 </AppBar>
-                <List>
+                <List className="TTList">
                     {routes.map((drawerItemProps: IDrawerItemProps, id: number) => (
                         <TTDrawerItem key={id} label={drawerItemProps.label} route={drawerItemProps.route} />
                     ))}

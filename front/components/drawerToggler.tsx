@@ -12,7 +12,7 @@ const DrawerToggler = () => {
         dispatch(toggleMenu());
     }
     return (
-        <IconButton onClick={toggleDrawer}>
+        <IconButton aria-label="menu" onClick={toggleDrawer} color="inherit" edge="start">
             <Menu/>
         </IconButton>
     )

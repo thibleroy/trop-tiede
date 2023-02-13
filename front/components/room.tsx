@@ -12,9 +12,9 @@ const TTRoom = ({ room }: IRoomProps) => {
     return (
         <ListItem divider>
             <ListItemText primary={room.RoomDescription.Description.Name}
-                secondary={room.RoomDescription.Description.Details} 
-                />
-                id: <Button onClick={e => navigate(e, '/room/' + room.Resource?.ID)}>{room.Resource?.ID}</Button>
+                secondary={room.RoomDescription.Description.Details}
+            />
+            <Button onClick={e => navigate(e, '/room/' + room.Resource?.ID)}>{room.Resource?.ID}</Button>
         </ListItem>
     )
 }

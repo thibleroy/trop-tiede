@@ -1,12 +1,18 @@
-import { AppBar, Toolbar, Typography } from "@material-ui/core";
+import { AppBar, Box, Grid, Toolbar, Typography } from "@material-ui/core";
 import TTDrawer from "./drawer";
+
 const TTAppBar = () => {
-    return (<AppBar position="static">
-        <Toolbar>
-            <TTDrawer />
-            <Typography align="center" variant="h4"> Trop Tiède</Typography>
-        </Toolbar>
-    </AppBar>
+    return (
+        <Box sx={{ flexGrow: 1 }}>
+            <AppBar position="static">
+                <Toolbar className="TTToolbar">
+                <Grid container justifyContent="space-between">  
+                    <TTDrawer/>
+                    <Typography className="TTTitle" align="left" variant="h4"> Trop Tiède</Typography>
+                    </Grid>
+                </Toolbar>
+            </AppBar>
+        </Box>
     )
 }
 

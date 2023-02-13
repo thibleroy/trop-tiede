@@ -3,11 +3,10 @@ import { Card, CardContent, Typography } from "@material-ui/core";
 
 const TTError = ({ error }: IErrorProps) => {
     console.log('err', error)
-
+    
     if ('status' in error) {
         // you can access all properties of `FetchBaseQueryError` here
         const errMsg = 'error' in error ? error.error : JSON.stringify(error.data)
-
         return (
             <>
                 <Typography variant="h4" color="textSecondary">

@@ -1,0 +1,10 @@
+.drawerItem {
+    width: 100%;
+    display: block;
+    text-align: left;
+}
+
+.TTDrawer {
+    height: 100%;
+    display: flex;
+}

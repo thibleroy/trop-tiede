@@ -1,7 +1,7 @@
-.Typography {
+.TTToolbar {
     display: block;
-    margin-left: auto;
+    margin-left: 0;
     margin-right: auto;
-    color: aqua;
-    text-align: center;
+    color: rgb(255, 255, 255);
+    text-align: start;
 }
