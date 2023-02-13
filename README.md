@@ -8,11 +8,15 @@
 
 - mongoDB client
 
+#### Microservices communication
+
+- Rabbit MQ (for async)
+- RPC over Rabbit MQ (for sync)
+
 #### Devices messaging
 
-- mqtt client
+- MQTT
 
-#### HTTP server
 
 ### FrontEnd (NextJS)
 
