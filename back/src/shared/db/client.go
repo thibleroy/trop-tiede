@@ -3,16 +3,13 @@ package db
 import (
 	"context"
 
+	"github.com/thibleroy/trop-tiede/back/src/shared/utils"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.uber.org/zap"
 )
 
 func RegisterDatabase(context context.Context, config options.ClientOptions) (*mongo.Client, error) {
-	client, err := mongo.Connect(context, options.Client().ApplyURI(""))
-	if err != nil {
-		zap.Error(err)
-		return nil, err
-	}
+	client, err := mongo.Connect(context, &config)
+	utils.HandleError(err, "Error connection db"+config.GetURI())
 	return client, err
 }

@@ -15,7 +15,14 @@ var brokerConn *rabbitmq.Connection
 
 func deviceHandler(w http.ResponseWriter, r *http.Request) {
 	corrId := utils.RandomString(32)
-	res, err := broker.RPC(*brokerConn, "hey, message from http gateway for device", "device_rpc", "a", corrId)
+	res, err := broker.RPC(*brokerConn, "hey, message from http gateway for device", "device_rpc", "device_rpc_cb", corrId)
+	utils.HandleError(err, "error RPC")
+	fmt.Fprintln(w, res)
+}
+
+func userHandler(w http.ResponseWriter, r *http.Request) {
+	corrId := utils.RandomString(32)
+	res, err := broker.RPC(*brokerConn, "hey, message from http gateway for user", "user_rpc", "user_rpc_cb", corrId)
 	utils.HandleError(err, "error RPC")
 	fmt.Fprintln(w, res)
 }
@@ -30,6 +37,7 @@ func main() {
 	}
 	brokerConn, _ = broker.Connect(client_options)
 	http.HandleFunc("/device", deviceHandler)
+	http.HandleFunc("/user", userHandler)
 	fmt.Println("Server starting...")
 	err := http.ListenAndServe(":3000", nil)
 	if errors.Is(err, http.ErrServerClosed) {

@@ -4,3 +4,5 @@ pkg/
 github.com/
 .DS_STORE
 gin-bin
+node_modules/
+dist/

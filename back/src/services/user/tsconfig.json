@@ -1,0 +1,27 @@
+{
+  "include": ["./"],
+  "compilerOptions": {
+    "outDir": "dist",
+    "baseUrl": ".",
+    "paths": {
+      "@bla": ["bla"],
+    },
+    "target": "esnext",
+    "useDefineForClassFields": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "strict": true,
+    "jsx": "preserve",
+    "sourceMap": false,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "lib": ["esnext", "dom"],
+    "skipLibCheck": true,
+    "rootDir": "./",
+    "declaration": true
+  },
+  "exclude": ["node_modules", "dist"],
+  "ts-node": {
+    "esm": true
+  }
+}
