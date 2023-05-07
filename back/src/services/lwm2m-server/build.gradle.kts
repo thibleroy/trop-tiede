@@ -1,29 +1,38 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
-    kotlin("jvm") version "1.8.0"
-    application
+	war
+	id("org.springframework.boot") version "3.0.6"
+	id("io.spring.dependency-management") version "1.1.0"
+	kotlin("jvm") version "1.7.22"
+	kotlin("plugin.spring") version "1.7.22"
 }
 
 group = "trop.tiede"
-version = "1.0.0"
+version = "0.0.1-SNAPSHOT"
+java.sourceCompatibility = JavaVersion.VERSION_17
+
 
 repositories {
-    mavenCentral()
+	mavenCentral()
 }
 
 dependencies {
-    implementation("org.eclipse.leshan:leshan-server-cf:2.0.0-M10")
-    implementation("org.slf4j:slf4j-simple:2.0.5")
-    testImplementation("org.jetbrains.kotlin:kotlin-test:1.8.20-RC")
+	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.jetbrains.kotlin:kotlin-reflect")
+	implementation("org.eclipse.leshan:leshan-server-cf:2.0.0-M11")
+	implementation("org.eclipse.leshan:leshan-server-core:2.0.0-M11")
+	providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
-tasks.test {
-    useJUnitPlatform()
+tasks.withType<KotlinCompile> {
+	kotlinOptions {
+		freeCompilerArgs = listOf("-Xjsr305=strict")
+		jvmTarget = "17"
+	}
 }
 
-kotlin {
-    jvmToolchain(11)
-}
-
-application {
-    mainClass.set("MainKt")
+tasks.withType<Test> {
+	useJUnitPlatform()
 }
