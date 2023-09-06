@@ -16,6 +16,7 @@ import (
 )
 
 var driveSvc *drive.Service
+var config *TTConfig
 
 // Retrieve a token, saves the token, then returns the generated client.
 func getClient(config *oauth2.Config) *http.Client {
@@ -84,7 +85,7 @@ func sendFile(path string) (*drive.File, error) {
 }
 
 func saveRecord(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/" {
+	if r.URL.Path != "/save_record" {
 		http.Error(w, "404 not found.", http.StatusNotFound)
 		return
 	}
@@ -95,31 +96,37 @@ func saveRecord(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintf(w, "ParseForm() err: %v", err)
 			return
 		}
-		f, err := sendFile("/home/pi/ha/config/record")
+		f, err := sendFile(config.VideoStorage.Path)
 		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(err.Error()))
+			return
 		}
 		w.Write([]byte(f.Id))
 	default:
-		fmt.Fprintf(w, "Sorry, only GET and POST methods are supported.")
+		fmt.Fprintf(w, "Sorry, only POST method is supported.")
 	}
 }
 
 func main() {
-	ctx := context.Background()
-	b, err := os.ReadFile("credentials.json")
+	var err error
+	config, err = LoadConfig("./config.json")
+	if err != nil {
+		log.Fatalf("Unable to read config file: %v", err)
+	}
+	b, err := os.ReadFile(config.GoogleDrive.CredentialsPath)
 	if err != nil {
 		log.Fatalf("Unable to read client secret file: %v", err)
 	}
 
 	// If modifying these scopes, delete your previously saved token.json.
-	config, err := google.ConfigFromJSON(b, drive.DriveMetadataReadonlyScope, drive.DriveFileScope)
+	gConfig, err := google.ConfigFromJSON(b, drive.DriveMetadataReadonlyScope, drive.DriveFileScope)
 	if err != nil {
 		log.Fatalf("Unable to parse client secret file to config: %v", err)
 	}
-	client := getClient(config)
+	client := getClient(gConfig)
 
-	driveSvc, err = drive.NewService(ctx, option.WithHTTPClient(client))
+	driveSvc, err = drive.NewService(context.Background(), option.WithHTTPClient(client))
 	if err != nil {
 		log.Panicln(err)
 	}

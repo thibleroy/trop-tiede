@@ -8,6 +8,7 @@
             "name": "main",
             "type": "go",
             "request": "launch",
+            "output": "./video_storage",
             "mode": "debug",
             "program": "./"
         } 

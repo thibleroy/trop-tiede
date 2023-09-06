@@ -1,0 +1,8 @@
+{
+    "google_drive": {
+        "credentials_path": "./credentials.json"
+    },
+    "video_storage": {
+        "path": "./record.mp4"
+    }
+}
