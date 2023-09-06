@@ -96,6 +96,7 @@ func saveRecord(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintf(w, "ParseForm() err: %v", err)
 			return
 		}
+		fmt.Println("received request with host:", r.Host)
 		f, err := sendFile(config.VideoStorage.Path)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
