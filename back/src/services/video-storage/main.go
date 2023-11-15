@@ -73,11 +73,7 @@ func saveToken(path string, token *oauth2.Token) {
 	json.NewEncoder(f).Encode(token)
 }
 
-func sendFile(path string) (*drive.File, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		log.Fatalln(err)
-	}
+func sendFile(file *os.File) (*drive.File, error) {
 	f := &drive.File{Name: "record_" + time.Now().String(), Parents: []string{"1BQZosDDT_J_NtcFfPIOQ_m-CvPMuJDOy"}}
 	return driveSvc.Files.Create(f).Media(file).
 		ProgressUpdater(func(now, size int64) { fmt.Printf("%d, %d\r", now, size) }).
@@ -97,7 +93,12 @@ func saveRecord(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		fmt.Println("received request with host:", r.Host)
-		f, err := sendFile(config.VideoStorage.Path)
+		file, err := os.Open(config.VideoStorage.Path)
+		if err != nil {
+			fmt.Fprintf(w, "os.Open err: %v", err)
+			return
+		}
+		f, err := sendFile(file)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(err.Error()))
@@ -119,7 +120,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("Unable to read client secret file: %v", err)
 	}
-
 	// If modifying these scopes, delete your previously saved token.json.
 	gConfig, err := google.ConfigFromJSON(b, drive.DriveMetadataReadonlyScope, drive.DriveFileScope)
 	if err != nil {
